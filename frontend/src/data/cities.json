@@ -1,0 +1,1380 @@
+[
+  {
+    "name": "ADANA",
+    "districts": [
+      "ALADAĞ",
+      "CEYHAN",
+      "FEKE",
+      "KARATAŞ",
+      "KARAİSALI",
+      "KOZAN",
+      "POZANTI",
+      "SARIÇAM",
+      "SAİMBEYLİ",
+      "SEYHAN",
+      "TUFANBEYLİ",
+      "YUMURTALIK",
+      "YÜREĞİR",
+      "ÇUKUROVA",
+      "İMAMOĞLU"
+    ]
+  },
+  {
+    "name": "ADIYAMAN",
+    "districts": [
+      "BESNİ",
+      "GERGER",
+      "GÖLBAŞI",
+      "KAHTA",
+      "MERKEZ",
+      "SAMSAT",
+      "SİNCİK",
+      "TUT",
+      "ÇELİKHAN"
+    ]
+  },
+  {
+    "name": "AFYONKARAHİSAR",
+    "districts": [
+      "BAYAT",
+      "BAŞMAKÇI",
+      "BOLVADİN",
+      "DAZKIRI",
+      "DİNAR",
+      "EMİRDAĞ",
+      "EVCİLER",
+      "HOCALAR",
+      "KIZILÖREN",
+      "MERKEZ",
+      "SANDIKLI",
+      "SULTANDAĞI",
+      "SİNANPAŞA",
+      "ÇAY",
+      "ÇOBANLAR",
+      "İHSANİYE",
+      "İSCEHİSAR",
+      "ŞUHUT"
+    ]
+  },
+  {
+    "name": "AKSARAY",
+    "districts": [
+      "AĞAÇÖREN",
+      "ESKİL",
+      "GÜLAĞAÇ",
+      "GÜZELYURT",
+      "MERKEZ",
+      "ORTAKÖY",
+      "SARIYAHŞİ",
+      "SULTANHANI"
+    ]
+  },
+  {
+    "name": "AMASYA",
+    "districts": [
+      "GÖYNÜCEK",
+      "GÜMÜŞHACIKÖY",
+      "HAMAMÖZÜ",
+      "MERKEZ",
+      "MERZİFON",
+      "SULUOVA",
+      "TAŞOVA"
+    ]
+  },
+  {
+    "name": "ANKARA",
+    "districts": [
+      "AKYURT",
+      "ALTINDAĞ",
+      "AYAŞ",
+      "BALA",
+      "BEYPAZARI",
+      "ELMADAĞ",
+      "ETİMESGUT",
+      "EVREN",
+      "GÖLBAŞI",
+      "GÜDÜL",
+      "HAYMANA",
+      "KAHRAMANKAZAN",
+      "KALECİK",
+      "KEÇİÖREN",
+      "KIZILCAHAMAM",
+      "MAMAK",
+      "NALLIHAN",
+      "POLATLI",
+      "PURSAKLAR",
+      "SİNCAN",
+      "YENİMAHALLE",
+      "ÇAMLIDERE",
+      "ÇANKAYA",
+      "ÇUBUK",
+      "ŞEREFLİKOÇHİSAR"
+    ]
+  },
+  {
+    "name": "ANTALYA",
+    "districts": [
+      "AKSEKİ",
+      "AKSU",
+      "ALANYA",
+      "DEMRE",
+      "DÖŞEMEALTI",
+      "ELMALI",
+      "FİNİKE",
+      "GAZİPAŞA",
+      "GÜNDOĞMUŞ",
+      "KAŞ",
+      "KEMER",
+      "KEPEZ",
+      "KONYAALTI",
+      "KORKUTELİ",
+      "KUMLUCA",
+      "MANAVGAT",
+      "MURATPAŞA",
+      "SERİK",
+      "İBRADI"
+    ]
+  },
+  {
+    "name": "ARDAHAN",
+    "districts": [
+      "DAMAL",
+      "GÖLE",
+      "HANAK",
+      "MERKEZ",
+      "POSOF",
+      "ÇILDIR"
+    ]
+  },
+  {
+    "name": "ARTVİN",
+    "districts": [
+      "ARDANUÇ",
+      "ARHAVİ",
+      "BORÇKA",
+      "HOPA",
+      "KEMALPAŞA",
+      "MERKEZ",
+      "MURGUL",
+      "YUSUFELİ",
+      "ŞAVŞAT"
+    ]
+  },
+  {
+    "name": "AYDIN",
+    "districts": [
+      "BOZDOĞAN",
+      "BUHARKENT",
+      "DİDİM",
+      "EFELER",
+      "GERMENCİK",
+      "KARACASU",
+      "KARPUZLU",
+      "KOÇARLI",
+      "KUYUCAK",
+      "KUŞADASI",
+      "KÖŞK",
+      "NAZİLLİ",
+      "SULTANHİSAR",
+      "SÖKE",
+      "YENİPAZAR",
+      "ÇİNE",
+      "İNCİRLİOVA"
+    ]
+  },
+  {
+    "name": "AĞRI",
+    "districts": [
+      "DOĞUBAYAZIT",
+      "DİYADİN",
+      "ELEŞKİRT",
+      "HAMUR",
+      "MERKEZ",
+      "PATNOS",
+      "TAŞLIÇAY",
+      "TUTAK"
+    ]
+  },
+  {
+    "name": "BALIKESİR",
+    "districts": [
+      "ALTIEYLÜL",
+      "AYVALIK",
+      "BALYA",
+      "BANDIRMA",
+      "BURHANİYE",
+      "BİGADİÇ",
+      "DURSUNBEY",
+      "EDREMİT",
+      "ERDEK",
+      "GÖMEÇ",
+      "GÖNEN",
+      "HAVRAN",
+      "KARESİ",
+      "KEPSUT",
+      "MANYAS",
+      "MARMARA",
+      "SAVAŞTEPE",
+      "SINDIRGI",
+      "SUSURLUK",
+      "İVRİNDİ"
+    ]
+  },
+  {
+    "name": "BARTIN",
+    "districts": [
+      "AMASRA",
+      "KURUCAŞİLE",
+      "MERKEZ",
+      "ULUS"
+    ]
+  },
+  {
+    "name": "BATMAN",
+    "districts": [
+      "BEŞİRİ",
+      "GERCÜŞ",
+      "HASANKEYF",
+      "KOZLUK",
+      "MERKEZ",
+      "SASON"
+    ]
+  },
+  {
+    "name": "BAYBURT",
+    "districts": [
+      "AYDINTEPE",
+      "DEMİRÖZÜ",
+      "MERKEZ"
+    ]
+  },
+  {
+    "name": "BOLU",
+    "districts": [
+      "DÖRTDİVAN",
+      "GEREDE",
+      "GÖYNÜK",
+      "KIBRISCIK",
+      "MENGEN",
+      "MERKEZ",
+      "MUDURNU",
+      "SEBEN",
+      "YENİÇAĞA"
+    ]
+  },
+  {
+    "name": "BURDUR",
+    "districts": [
+      "ALTINYAYLA",
+      "AĞLASUN",
+      "BUCAK",
+      "GÖLHİSAR",
+      "KARAMANLI",
+      "KEMER",
+      "MERKEZ",
+      "TEFENNİ",
+      "YEŞİLOVA",
+      "ÇAVDIR",
+      "ÇELTİKÇİ"
+    ]
+  },
+  {
+    "name": "BURSA",
+    "districts": [
+      "BÜYÜKORHAN",
+      "GEMLİK",
+      "GÜRSU",
+      "HARMANCIK",
+      "KARACABEY",
+      "KELES",
+      "KESTEL",
+      "MUDANYA",
+      "MUSTAFAKEMALPAŞA",
+      "NİLÜFER",
+      "ORHANELİ",
+      "ORHANGAZİ",
+      "OSMANGAZİ",
+      "YENİŞEHİR",
+      "YILDIRIM",
+      "İNEGÖL",
+      "İZNİK"
+    ]
+  },
+  {
+    "name": "BİLECİK",
+    "districts": [
+      "BOZÜYÜK",
+      "GÖLPAZARI",
+      "MERKEZ",
+      "OSMANELİ",
+      "PAZARYERİ",
+      "SÖĞÜT",
+      "YENİPAZAR",
+      "İNHİSAR"
+    ]
+  },
+  {
+    "name": "BİNGÖL",
+    "districts": [
+      "ADAKLI",
+      "GENÇ",
+      "KARLIOVA",
+      "KİĞI",
+      "MERKEZ",
+      "SOLHAN",
+      "YAYLADERE",
+      "YEDİSU"
+    ]
+  },
+  {
+    "name": "BİTLİS",
+    "districts": [
+      "ADİLCEVAZ",
+      "AHLAT",
+      "GÜROYMAK",
+      "HİZAN",
+      "MERKEZ",
+      "MUTKİ",
+      "TATVAN"
+    ]
+  },
+  {
+    "name": "DENİZLİ",
+    "districts": [
+      "ACIPAYAM",
+      "BABADAĞ",
+      "BAKLAN",
+      "BEKİLLİ",
+      "BEYAĞAÇ",
+      "BOZKURT",
+      "BULDAN",
+      "GÜNEY",
+      "HONAZ",
+      "KALE",
+      "MERKEZEFENDİ",
+      "PAMUKKALE",
+      "SARAYKÖY",
+      "SERİNHİSAR",
+      "TAVAS",
+      "ÇAL",
+      "ÇAMELİ",
+      "ÇARDAK",
+      "ÇİVRİL"
+    ]
+  },
+  {
+    "name": "DÜZCE",
+    "districts": [
+      "AKÇAKOCA",
+      "CUMAYERİ",
+      "GÖLYAKA",
+      "GÜMÜŞOVA",
+      "KAYNAŞLI",
+      "MERKEZ",
+      "YIĞILCA",
+      "ÇİLİMLİ"
+    ]
+  },
+  {
+    "name": "DİYARBAKIR",
+    "districts": [
+      "BAĞLAR",
+      "BİSMİL",
+      "DİCLE",
+      "ERGANİ",
+      "EĞİL",
+      "HANİ",
+      "HAZRO",
+      "KAYAPINAR",
+      "KOCAKÖY",
+      "KULP",
+      "LİCE",
+      "SUR",
+      "SİLVAN",
+      "YENİŞEHİR",
+      "ÇERMİK",
+      "ÇINAR",
+      "ÇÜNGÜŞ"
+    ]
+  },
+  {
+    "name": "EDİRNE",
+    "districts": [
+      "ENEZ",
+      "HAVSA",
+      "KEŞAN",
+      "LALAPAŞA",
+      "MERKEZ",
+      "MERİÇ",
+      "SÜLOĞLU",
+      "UZUNKÖPRÜ",
+      "İPSALA"
+    ]
+  },
+  {
+    "name": "ELAZIĞ",
+    "districts": [
+      "ALACAKAYA",
+      "ARICAK",
+      "AĞIN",
+      "BASKİL",
+      "KARAKOÇAN",
+      "KEBAN",
+      "KOVANCILAR",
+      "MADEN",
+      "MERKEZ",
+      "PALU",
+      "SİVRİCE"
+    ]
+  },
+  {
+    "name": "ERZURUM",
+    "districts": [
+      "AZİZİYE",
+      "AŞKALE",
+      "HINIS",
+      "HORASAN",
+      "KARAYAZI",
+      "KARAÇOBAN",
+      "KÖPRÜKÖY",
+      "NARMAN",
+      "OLTU",
+      "OLUR",
+      "PALANDÖKEN",
+      "PASİNLER",
+      "PAZARYOLU",
+      "TEKMAN",
+      "TORTUM",
+      "UZUNDERE",
+      "YAKUTİYE",
+      "ÇAT",
+      "İSPİR",
+      "ŞENKAYA"
+    ]
+  },
+  {
+    "name": "ERZİNCAN",
+    "districts": [
+      "KEMAH",
+      "KEMALİYE",
+      "MERKEZ",
+      "OTLUKBELİ",
+      "REFAHİYE",
+      "TERCAN",
+      "ÇAYIRLI",
+      "ÜZÜMLÜ",
+      "İLİÇ"
+    ]
+  },
+  {
+    "name": "ESKİŞEHİR",
+    "districts": [
+      "ALPU",
+      "BEYLİKOVA",
+      "GÜNYÜZÜ",
+      "HAN",
+      "MAHMUDİYE",
+      "MİHALGAZİ",
+      "MİHALIÇÇIK",
+      "ODUNPAZARI",
+      "SARICAKAYA",
+      "SEYİTGAZİ",
+      "SİVRİHİSAR",
+      "TEPEBAŞI",
+      "ÇİFTELER",
+      "İNÖNÜ"
+    ]
+  },
+  {
+    "name": "GAZİANTEP",
+    "districts": [
+      "ARABAN",
+      "KARKAMIŞ",
+      "NURDAĞI",
+      "NİZİP",
+      "OĞUZELİ",
+      "YAVUZELİ",
+      "İSLAHİYE",
+      "ŞAHİNBEY",
+      "ŞEHİTKAMİL"
+    ]
+  },
+  {
+    "name": "GÜMÜŞHANE",
+    "districts": [
+      "KELKİT",
+      "KÖSE",
+      "KÜRTÜN",
+      "MERKEZ",
+      "TORUL",
+      "ŞİRAN"
+    ]
+  },
+  {
+    "name": "GİRESUN",
+    "districts": [
+      "ALUCRA",
+      "BULANCAK",
+      "DERELİ",
+      "DOĞANKENT",
+      "ESPİYE",
+      "EYNESİL",
+      "GÖRELE",
+      "GÜCE",
+      "KEŞAP",
+      "MERKEZ",
+      "PİRAZİZ",
+      "TİREBOLU",
+      "YAĞLIDERE",
+      "ÇAMOLUK",
+      "ÇANAKÇI",
+      "ŞEBİNKARAHİSAR"
+    ]
+  },
+  {
+    "name": "HAKKARİ",
+    "districts": [
+      "DERECİK",
+      "MERKEZ",
+      "YÜKSEKOVA",
+      "ÇUKURCA",
+      "ŞEMDİNLİ"
+    ]
+  },
+  {
+    "name": "HATAY",
+    "districts": [
+      "ALTINÖZÜ",
+      "ANTAKYA",
+      "ARSUZ",
+      "BELEN",
+      "DEFNE",
+      "DÖRTYOL",
+      "ERZİN",
+      "HASSA",
+      "KIRIKHAN",
+      "KUMLU",
+      "PAYAS",
+      "REYHANLI",
+      "SAMANDAĞ",
+      "YAYLADAĞI",
+      "İSKENDERUN"
+    ]
+  },
+  {
+    "name": "ISPARTA",
+    "districts": [
+      "AKSU",
+      "ATABEY",
+      "EĞİRDİR",
+      "GELENDOST",
+      "GÖNEN",
+      "KEÇİBORLU",
+      "MERKEZ",
+      "SENİRKENT",
+      "SÜTÇÜLER",
+      "ULUBORLU",
+      "YALVAÇ",
+      "YENİŞARBADEMLİ",
+      "ŞARKİKARAAĞAÇ"
+    ]
+  },
+  {
+    "name": "IĞDIR",
+    "districts": [
+      "ARALIK",
+      "KARAKOYUNLU",
+      "MERKEZ",
+      "TUZLUCA"
+    ]
+  },
+  {
+    "name": "KAHRAMANMARAŞ",
+    "districts": [
+      "AFŞİN",
+      "ANDIRIN",
+      "DULKADİROĞLU",
+      "EKİNÖZÜ",
+      "ELBİSTAN",
+      "GÖKSUN",
+      "NURHAK",
+      "ONİKİŞUBAT",
+      "PAZARCIK",
+      "TÜRKOĞLU",
+      "ÇAĞLAYANCERİT"
+    ]
+  },
+  {
+    "name": "KARABÜK",
+    "districts": [
+      "EFLANİ",
+      "ESKİPAZAR",
+      "MERKEZ",
+      "OVACIK",
+      "SAFRANBOLU",
+      "YENİCE"
+    ]
+  },
+  {
+    "name": "KARAMAN",
+    "districts": [
+      "AYRANCI",
+      "BAŞYAYLA",
+      "ERMENEK",
+      "KAZIMKARABEKİR",
+      "MERKEZ",
+      "SARIVELİLER"
+    ]
+  },
+  {
+    "name": "KARS",
+    "districts": [
+      "AKYAKA",
+      "ARPAÇAY",
+      "DİGOR",
+      "KAĞIZMAN",
+      "MERKEZ",
+      "SARIKAMIŞ",
+      "SELİM",
+      "SUSUZ"
+    ]
+  },
+  {
+    "name": "KASTAMONU",
+    "districts": [
+      "ABANA",
+      "ARAÇ",
+      "AZDAVAY",
+      "AĞLI",
+      "BOZKURT",
+      "CİDE",
+      "DADAY",
+      "DEVREKANİ",
+      "DOĞANYURT",
+      "HANÖNÜ",
+      "KÜRE",
+      "MERKEZ",
+      "PINARBAŞI",
+      "SEYDİLER",
+      "TAŞKÖPRÜ",
+      "TOSYA",
+      "ÇATALZEYTİN",
+      "İHSANGAZİ",
+      "İNEBOLU",
+      "ŞENPAZAR"
+    ]
+  },
+  {
+    "name": "KAYSERİ",
+    "districts": [
+      "AKKIŞLA",
+      "BÜNYAN",
+      "DEVELİ",
+      "FELAHİYE",
+      "HACILAR",
+      "KOCASİNAN",
+      "MELİKGAZİ",
+      "PINARBAŞI",
+      "SARIOĞLAN",
+      "SARIZ",
+      "TALAS",
+      "TOMARZA",
+      "YAHYALI",
+      "YEŞİLHİSAR",
+      "ÖZVATAN",
+      "İNCESU"
+    ]
+  },
+  {
+    "name": "KIRIKKALE",
+    "districts": [
+      "BAHŞILI",
+      "BALIŞEYH",
+      "DELİCE",
+      "KARAKEÇİLİ",
+      "KESKİN",
+      "MERKEZ",
+      "SULAKYURT",
+      "YAHŞİHAN",
+      "ÇELEBİ"
+    ]
+  },
+  {
+    "name": "KIRKLARELİ",
+    "districts": [
+      "BABAESKİ",
+      "DEMİRKÖY",
+      "KOFÇAZ",
+      "LÜLEBURGAZ",
+      "MERKEZ",
+      "PEHLİVANKÖY",
+      "PINARHİSAR",
+      "VİZE"
+    ]
+  },
+  {
+    "name": "KIRŞEHİR",
+    "districts": [
+      "AKPINAR",
+      "AKÇAKENT",
+      "BOZTEPE",
+      "KAMAN",
+      "MERKEZ",
+      "MUCUR",
+      "ÇİÇEKDAĞI"
+    ]
+  },
+  {
+    "name": "KOCAELİ",
+    "districts": [
+      "BAŞİSKELE",
+      "DARICA",
+      "DERİNCE",
+      "DİLOVASI",
+      "GEBZE",
+      "GÖLCÜK",
+      "KANDIRA",
+      "KARAMÜRSEL",
+      "KARTEPE",
+      "KÖRFEZ",
+      "ÇAYIROVA",
+      "İZMİT"
+    ]
+  },
+  {
+    "name": "KONYA",
+    "districts": [
+      "AHIRLI",
+      "AKÖREN",
+      "AKŞEHİR",
+      "ALTINEKİN",
+      "BEYŞEHİR",
+      "BOZKIR",
+      "CİHANBEYLİ",
+      "DERBENT",
+      "DEREBUCAK",
+      "DOĞANHİSAR",
+      "EMİRGAZİ",
+      "EREĞLİ",
+      "GÜNEYSINIR",
+      "HADİM",
+      "HALKAPINAR",
+      "HÜYÜK",
+      "ILGIN",
+      "KADINHANI",
+      "KARAPINAR",
+      "KARATAY",
+      "KULU",
+      "MERAM",
+      "SARAYÖNÜ",
+      "SELÇUKLU",
+      "SEYDİŞEHİR",
+      "TAŞKENT",
+      "TUZLUKÇU",
+      "YALIHÜYÜK",
+      "YUNAK",
+      "ÇELTİK",
+      "ÇUMRA"
+    ]
+  },
+  {
+    "name": "KÜTAHYA",
+    "districts": [
+      "ALTINTAŞ",
+      "ASLANAPA",
+      "DOMANİÇ",
+      "DUMLUPINAR",
+      "EMET",
+      "GEDİZ",
+      "HİSARCIK",
+      "MERKEZ",
+      "PAZARLAR",
+      "SİMAV",
+      "TAVŞANLI",
+      "ÇAVDARHİSAR",
+      "ŞAPHANE"
+    ]
+  },
+  {
+    "name": "KİLİS",
+    "districts": [
+      "ELBEYLİ",
+      "MERKEZ",
+      "MUSABEYLİ",
+      "POLATELİ"
+    ]
+  },
+  {
+    "name": "MALATYA",
+    "districts": [
+      "AKÇADAĞ",
+      "ARAPGİR",
+      "ARGUVAN",
+      "BATTALGAZİ",
+      "DARENDE",
+      "DOĞANYOL",
+      "DOĞANŞEHİR",
+      "HEKİMHAN",
+      "KALE",
+      "KULUNCAK",
+      "PÜTÜRGE",
+      "YAZIHAN",
+      "YEŞİLYURT"
+    ]
+  },
+  {
+    "name": "MANİSA",
+    "districts": [
+      "AHMETLİ",
+      "AKHİSAR",
+      "ALAŞEHİR",
+      "DEMİRCİ",
+      "GÖLMARMARA",
+      "GÖRDES",
+      "KIRKAĞAÇ",
+      "KULA",
+      "KÖPRÜBAŞI",
+      "SALİHLİ",
+      "SARIGÖL",
+      "SARUHANLI",
+      "SELENDİ",
+      "SOMA",
+      "TURGUTLU",
+      "YUNUSEMRE",
+      "ŞEHZADELER"
+    ]
+  },
+  {
+    "name": "MARDİN",
+    "districts": [
+      "ARTUKLU",
+      "DARGEÇİT",
+      "DERİK",
+      "KIZILTEPE",
+      "MAZIDAĞI",
+      "MİDYAT",
+      "NUSAYBİN",
+      "SAVUR",
+      "YEŞİLLİ",
+      "ÖMERLİ"
+    ]
+  },
+  {
+    "name": "MERSİN",
+    "districts": [
+      "AKDENİZ",
+      "ANAMUR",
+      "AYDINCIK",
+      "BOZYAZI",
+      "ERDEMLİ",
+      "GÜLNAR",
+      "MEZİTLİ",
+      "MUT",
+      "SİLİFKE",
+      "TARSUS",
+      "TOROSLAR",
+      "YENİŞEHİR",
+      "ÇAMLIYAYLA"
+    ]
+  },
+  {
+    "name": "MUĞLA",
+    "districts": [
+      "BODRUM",
+      "DALAMAN",
+      "DATÇA",
+      "FETHİYE",
+      "KAVAKLIDERE",
+      "KÖYCEĞİZ",
+      "MARMARİS",
+      "MENTEŞE",
+      "MİLAS",
+      "ORTACA",
+      "SEYDİKEMER",
+      "ULA",
+      "YATAĞAN"
+    ]
+  },
+  {
+    "name": "MUŞ",
+    "districts": [
+      "BULANIK",
+      "HASKÖY",
+      "KORKUT",
+      "MALAZGİRT",
+      "MERKEZ",
+      "VARTO"
+    ]
+  },
+  {
+    "name": "NEVŞEHİR",
+    "districts": [
+      "ACIGÖL",
+      "AVANOS",
+      "DERİNKUYU",
+      "GÜLŞEHİR",
+      "HACIBEKTAŞ",
+      "KOZAKLI",
+      "MERKEZ",
+      "ÜRGÜP"
+    ]
+  },
+  {
+    "name": "NİĞDE",
+    "districts": [
+      "ALTUNHİSAR",
+      "BOR",
+      "MERKEZ",
+      "ULUKIŞLA",
+      "ÇAMARDI",
+      "ÇİFTLİK"
+    ]
+  },
+  {
+    "name": "ORDU",
+    "districts": [
+      "AKKUŞ",
+      "ALTINORDU",
+      "AYBASTI",
+      "FATSA",
+      "GÖLKÖY",
+      "GÜLYALI",
+      "GÜRGENTEPE",
+      "KABADÜZ",
+      "KABATAŞ",
+      "KORGAN",
+      "KUMRU",
+      "MESUDİYE",
+      "PERŞEMBE",
+      "ULUBEY",
+      "ÇAMAŞ",
+      "ÇATALPINAR",
+      "ÇAYBAŞI",
+      "ÜNYE",
+      "İKİZCE"
+    ]
+  },
+  {
+    "name": "OSMANİYE",
+    "districts": [
+      "BAHÇE",
+      "DÜZİÇİ",
+      "HASANBEYLİ",
+      "KADİRLİ",
+      "MERKEZ",
+      "SUMBAS",
+      "TOPRAKKALE"
+    ]
+  },
+  {
+    "name": "RİZE",
+    "districts": [
+      "ARDEŞEN",
+      "DEREPAZARI",
+      "FINDIKLI",
+      "GÜNEYSU",
+      "HEMŞİN",
+      "KALKANDERE",
+      "MERKEZ",
+      "PAZAR",
+      "ÇAMLIHEMŞİN",
+      "ÇAYELİ",
+      "İKİZDERE",
+      "İYİDERE"
+    ]
+  },
+  {
+    "name": "SAKARYA",
+    "districts": [
+      "ADAPAZARI",
+      "AKYAZI",
+      "ARİFİYE",
+      "ERENLER",
+      "FERİZLİ",
+      "GEYVE",
+      "HENDEK",
+      "KARAPÜRÇEK",
+      "KARASU",
+      "KAYNARCA",
+      "KOCAALİ",
+      "PAMUKOVA",
+      "SAPANCA",
+      "SERDİVAN",
+      "SÖĞÜTLÜ",
+      "TARAKLI"
+    ]
+  },
+  {
+    "name": "SAMSUN",
+    "districts": [
+      "19 MAYIS",
+      "ALAÇAM",
+      "ASARCIK",
+      "ATAKUM",
+      "AYVACIK",
+      "BAFRA",
+      "CANİK",
+      "HAVZA",
+      "KAVAK",
+      "LADİK",
+      "SALIPAZARI",
+      "TEKKEKÖY",
+      "TERME",
+      "VEZİRKÖPRÜ",
+      "YAKAKENT",
+      "ÇARŞAMBA",
+      "İLKADIM"
+    ]
+  },
+  {
+    "name": "SİNOP",
+    "districts": [
+      "AYANCIK",
+      "BOYABAT",
+      "DURAĞAN",
+      "DİKMEN",
+      "ERFELEK",
+      "GERZE",
+      "MERKEZ",
+      "SARAYDÜZÜ",
+      "TÜRKELİ"
+    ]
+  },
+  {
+    "name": "SİVAS",
+    "districts": [
+      "AKINCILAR",
+      "ALTINYAYLA",
+      "DOĞANŞAR",
+      "DİVRİĞİ",
+      "GEMEREK",
+      "GÖLOVA",
+      "GÜRÜN",
+      "HAFİK",
+      "KANGAL",
+      "KOYULHİSAR",
+      "MERKEZ",
+      "SUŞEHRİ",
+      "ULAŞ",
+      "YILDIZELİ",
+      "ZARA",
+      "İMRANLI",
+      "ŞARKIŞLA"
+    ]
+  },
+  {
+    "name": "SİİRT",
+    "districts": [
+      "BAYKAN",
+      "ERUH",
+      "KURTALAN",
+      "MERKEZ",
+      "PERVARİ",
+      "TİLLO",
+      "ŞİRVAN"
+    ]
+  },
+  {
+    "name": "TEKİRDAĞ",
+    "districts": [
+      "ERGENE",
+      "HAYRABOLU",
+      "KAPAKLI",
+      "MALKARA",
+      "MARMARAEREĞLİSİ",
+      "MURATLI",
+      "SARAY",
+      "SÜLEYMANPAŞA",
+      "ÇERKEZKÖY",
+      "ÇORLU",
+      "ŞARKÖY"
+    ]
+  },
+  {
+    "name": "TOKAT",
+    "districts": [
+      "ALMUS",
+      "ARTOVA",
+      "BAŞÇİFTLİK",
+      "ERBAA",
+      "MERKEZ",
+      "NİKSAR",
+      "PAZAR",
+      "REŞADİYE",
+      "SULUSARAY",
+      "TURHAL",
+      "YEŞİLYURT",
+      "ZİLE"
+    ]
+  },
+  {
+    "name": "TRABZON",
+    "districts": [
+      "AKÇAABAT",
+      "ARAKLI",
+      "ARSİN",
+      "BEŞİKDÜZÜ",
+      "DERNEKPAZARI",
+      "DÜZKÖY",
+      "HAYRAT",
+      "KÖPRÜBAŞI",
+      "MAÇKA",
+      "OF",
+      "ORTAHİSAR",
+      "SÜRMENE",
+      "TONYA",
+      "VAKFIKEBİR",
+      "YOMRA",
+      "ÇARŞIBAŞI",
+      "ÇAYKARA",
+      "ŞALPAZARI"
+    ]
+  },
+  {
+    "name": "TUNCELİ",
+    "districts": [
+      "HOZAT",
+      "MAZGİRT",
+      "MERKEZ",
+      "NAZIMİYE",
+      "OVACIK",
+      "PERTEK",
+      "PÜLÜMÜR",
+      "ÇEMİŞGEZEK"
+    ]
+  },
+  {
+    "name": "UŞAK",
+    "districts": [
+      "BANAZ",
+      "EŞME",
+      "KARAHALLI",
+      "MERKEZ",
+      "SİVASLI",
+      "ULUBEY"
+    ]
+  },
+  {
+    "name": "VAN",
+    "districts": [
+      "BAHÇESARAY",
+      "BAŞKALE",
+      "EDREMİT",
+      "ERCİŞ",
+      "GEVAŞ",
+      "GÜRPINAR",
+      "MURADİYE",
+      "SARAY",
+      "TUŞBA",
+      "ÇALDIRAN",
+      "ÇATAK",
+      "ÖZALP",
+      "İPEKYOLU"
+    ]
+  },
+  {
+    "name": "YALOVA",
+    "districts": [
+      "ALTINOVA",
+      "ARMUTLU",
+      "MERKEZ",
+      "TERMAL",
+      "ÇINARCIK",
+      "ÇİFTLİKKÖY"
+    ]
+  },
+  {
+    "name": "YOZGAT",
+    "districts": [
+      "AKDAĞMADENİ",
+      "AYDINCIK",
+      "BOĞAZLIYAN",
+      "KADIŞEHRİ",
+      "MERKEZ",
+      "SARAYKENT",
+      "SARIKAYA",
+      "SORGUN",
+      "YENİFAKILI",
+      "YERKÖY",
+      "ÇANDIR",
+      "ÇAYIRALAN",
+      "ÇEKEREK",
+      "ŞEFAATLİ"
+    ]
+  },
+  {
+    "name": "ZONGULDAK",
+    "districts": [
+      "ALAPLI",
+      "DEVREK",
+      "EREĞLİ",
+      "GÖKÇEBEY",
+      "KOZLU",
+      "KİLİMLİ",
+      "MERKEZ",
+      "ÇAYCUMA"
+    ]
+  },
+  {
+    "name": "ÇANAKKALE",
+    "districts": [
+      "AYVACIK",
+      "BAYRAMİÇ",
+      "BOZCAADA",
+      "BİGA",
+      "ECEABAT",
+      "EZİNE",
+      "GELİBOLU",
+      "GÖKÇEADA",
+      "LAPSEKİ",
+      "MERKEZ",
+      "YENİCE",
+      "ÇAN"
+    ]
+  },
+  {
+    "name": "ÇANKIRI",
+    "districts": [
+      "ATKARACALAR",
+      "BAYRAMÖREN",
+      "ELDİVAN",
+      "ILGAZ",
+      "KIZILIRMAK",
+      "KORGUN",
+      "KURŞUNLU",
+      "MERKEZ",
+      "ORTA",
+      "YAPRAKLI",
+      "ÇERKEŞ",
+      "ŞABANÖZÜ"
+    ]
+  },
+  {
+    "name": "ÇORUM",
+    "districts": [
+      "ALACA",
+      "BAYAT",
+      "BOĞAZKALE",
+      "DODURGA",
+      "KARGI",
+      "LAÇİN",
+      "MECİTÖZÜ",
+      "MERKEZ",
+      "ORTAKÖY",
+      "OSMANCIK",
+      "OĞUZLAR",
+      "SUNGURLU",
+      "UĞURLUDAĞ",
+      "İSKİLİP"
+    ]
+  },
+  {
+    "name": "İSTANBUL",
+    "districts": [
+      "ADALAR",
+      "ARNAVUTKÖY",
+      "ATAŞEHİR",
+      "AVCILAR",
+      "BAHÇELİEVLER",
+      "BAKIRKÖY",
+      "BAYRAMPAŞA",
+      "BAĞCILAR",
+      "BAŞAKŞEHİR",
+      "BEYKOZ",
+      "BEYLİKDÜZÜ",
+      "BEYOĞLU",
+      "BEŞİKTAŞ",
+      "BÜYÜKÇEKMECE",
+      "ESENLER",
+      "ESENYURT",
+      "EYÜPSULTAN",
+      "FATİH",
+      "GAZİOSMANPAŞA",
+      "GÜNGÖREN",
+      "KADIKÖY",
+      "KARTAL",
+      "KAĞITHANE",
+      "KÜÇÜKÇEKMECE",
+      "MALTEPE",
+      "PENDİK",
+      "SANCAKTEPE",
+      "SARIYER",
+      "SULTANBEYLİ",
+      "SULTANGAZİ",
+      "SİLİVRİ",
+      "TUZLA",
+      "ZEYTİNBURNU",
+      "ÇATALCA",
+      "ÇEKMEKÖY",
+      "ÜMRANİYE",
+      "ÜSKÜDAR",
+      "ŞİLE",
+      "ŞİŞLİ"
+    ]
+  },
+  {
+    "name": "İZMİR",
+    "districts": [
+      "ALİAĞA",
+      "BALÇOVA",
+      "BAYINDIR",
+      "BAYRAKLI",
+      "BERGAMA",
+      "BEYDAĞ",
+      "BORNOVA",
+      "BUCA",
+      "DİKİLİ",
+      "FOÇA",
+      "GAZİEMİR",
+      "GÜZELBAHÇE",
+      "KARABAĞLAR",
+      "KARABURUN",
+      "KARŞIYAKA",
+      "KEMALPAŞA",
+      "KINIK",
+      "KONAK",
+      "KİRAZ",
+      "MENDERES",
+      "MENEMEN",
+      "NARLIDERE",
+      "SEFERİHİSAR",
+      "SELÇUK",
+      "TORBALI",
+      "TİRE",
+      "URLA",
+      "ÇEŞME",
+      "ÇİĞLİ",
+      "ÖDEMİŞ"
+    ]
+  },
+  {
+    "name": "ŞANLIURFA",
+    "districts": [
+      "AKÇAKALE",
+      "BOZOVA",
+      "BİRECİK",
+      "CEYLANPINAR",
+      "EYYÜBİYE",
+      "HALFETİ",
+      "HALİLİYE",
+      "HARRAN",
+      "HİLVAN",
+      "KARAKÖPRÜ",
+      "SURUÇ",
+      "SİVEREK",
+      "VİRANŞEHİR"
+    ]
+  },
+  {
+    "name": "ŞIRNAK",
+    "districts": [
+      "BEYTÜŞŞEBAP",
+      "CİZRE",
+      "GÜÇLÜKONAK",
+      "MERKEZ",
+      "SİLOPİ",
+      "ULUDERE",
+      "İDİL"
+    ]
+  }
+]

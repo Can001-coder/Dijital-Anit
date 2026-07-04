@@ -1,0 +1,62 @@
+# =============================================
+# DIJITAL ANIT — .gitignore
+# =============================================
+
+# ==================== OS ====================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ==================== IDE ====================
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+nbproject/
+
+# ==================== BACKEND (Spring Boot / Maven) ====================
+backend/target/
+backend/*.jar
+backend/*.war
+backend/*.class
+
+# Log dosyaları
+backend/logs/
+*.log
+
+# Kullanıcı yükleme dosyaları (runtime'da oluşur, repo'ya gitmemeli)
+backend/uploads/images/*
+backend/uploads/audio/*
+backend/uploads/video/*
+# uploads klasör yapısını koru
+!backend/uploads/images/.gitkeep
+!backend/uploads/audio/.gitkeep
+!backend/uploads/video/.gitkeep
+
+# ==================== FRONTEND (React / Vite / Node) ====================
+frontend/node_modules/
+frontend/dist/
+
+# ==================== BUILD ÇIKTILARI ====================
+# Vite build çıktısı (npm run build ile yeniden oluşturulur)
+backend/src/main/resources/static/assets/
+backend/src/main/resources/static/index.html
+
+# ==================== ENV / GİZLİ DOSYALAR ====================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ==================== EKSTRA GEÇİCİ DOSYALAR ====================
+nohup.out
+frontend/sync.py
+uploads/
+.tempmediaStorage/
