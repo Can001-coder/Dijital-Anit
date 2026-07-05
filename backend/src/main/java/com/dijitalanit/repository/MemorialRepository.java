@@ -16,7 +16,7 @@ import com.dijitalanit.model.Memorial;
 public interface MemorialRepository extends JpaRepository<Memorial, Long>, JpaSpecificationExecutor<Memorial> {
 
 	// Python: Memorial.query.filter_by(user_id=current_user.id).first()
-	Optional<Memorial> findByUserId(Long userId);
+	Optional<Memorial> findFirstByUserIdOrderByIdDesc(Long userId);
 
 	// Python: Memorial.query.filter_by(slug=slug).first_or_404()
 	Optional<Memorial> findBySlug(String slug);

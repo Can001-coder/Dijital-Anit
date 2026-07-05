@@ -161,7 +161,7 @@ public class MemorialServiceImpl implements IMemorialService {
 
 	@Override
 	public DtoMemorial getMemorialByUserId(Long userId) {
-		Optional<Memorial> opt = memorialRepository.findByUserId(userId);
+		Optional<Memorial> opt = memorialRepository.findFirstByUserIdOrderByIdDesc(userId);
 		return opt.map(this::toDto).orElse(null);
 	}
 
@@ -194,7 +194,7 @@ public class MemorialServiceImpl implements IMemorialService {
 			memorial = memorialRepository.findById(input.getMemorialIdToEdit())
 					.orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.MEMORIAL_NOT_FOUND, input.getMemorialIdToEdit().toString())));
 		} else {
-			Optional<Memorial> existing = memorialRepository.findByUserId(userId);
+			Optional<Memorial> existing = memorialRepository.findFirstByUserIdOrderByIdDesc(userId);
 			memorial = existing.orElse(null);
 		}
 
@@ -287,7 +287,7 @@ public class MemorialServiceImpl implements IMemorialService {
 			if (username != null && !"anonymousUser".equals(username)) {
 				java.util.Optional<com.dijitalanit.model.User> currentUser = userRepository.findByUsername(username);
 				if (currentUser.isPresent()) {
-					java.util.Optional<Memorial> ownMemorial = memorialRepository.findByUserId(currentUser.get().getId());
+					java.util.Optional<Memorial> ownMemorial = memorialRepository.findFirstByUserIdOrderByIdDesc(currentUser.get().getId());
 					if (ownMemorial.isPresent() && ownMemorial.get().getStatus() != MemorialStatus.APPROVED) {
 						all.add(ownMemorial.get());
 					}
@@ -328,7 +328,7 @@ public class MemorialServiceImpl implements IMemorialService {
 			if (username != null && !"anonymousUser".equals(username)) {
 				java.util.Optional<com.dijitalanit.model.User> currentUser = userRepository.findByUsername(username);
 				if (currentUser.isPresent()) {
-					java.util.Optional<Memorial> ownMemorial = memorialRepository.findByUserId(currentUser.get().getId());
+					java.util.Optional<Memorial> ownMemorial = memorialRepository.findFirstByUserIdOrderByIdDesc(currentUser.get().getId());
 					if (ownMemorial.isPresent() && ownMemorial.get().getStatus() != MemorialStatus.APPROVED) {
 						if (ownMemorial.get().getName().toLowerCase().contains(query.trim().toLowerCase())) {
 							results.add(ownMemorial.get());
@@ -486,7 +486,7 @@ public class MemorialServiceImpl implements IMemorialService {
 	@Override
 	@Transactional
 	public void deleteMyMemorial(Long userId) {
-		Memorial memorial = memorialRepository.findByUserId(userId)
+		Memorial memorial = memorialRepository.findFirstByUserIdOrderByIdDesc(userId)
 				.orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "User ID: " + userId)));
 		
 		memorialRepository.delete(memorial);

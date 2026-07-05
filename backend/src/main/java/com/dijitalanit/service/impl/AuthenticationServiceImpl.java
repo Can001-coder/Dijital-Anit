@@ -20,6 +20,11 @@ import com.dijitalanit.dto.RefreshTokenRequest;
 import com.dijitalanit.dto.RegisterRequest;
 import com.dijitalanit.dto.TwoFactorSendRequest;
 import com.dijitalanit.dto.TwoFactorVerifyRequest;
+import com.dijitalanit.dto.ForgotPasswordRequest;
+import com.dijitalanit.dto.ForgotPasswordResponse;
+import com.dijitalanit.dto.ResetCodeSendRequest;
+import com.dijitalanit.dto.ResetCodeVerifyRequest;
+import com.dijitalanit.dto.ResetPasswordRequest;
 import com.dijitalanit.enums.UserRole;
 import com.dijitalanit.exception.BaseException;
 import com.dijitalanit.exception.ErrorMessage;
@@ -31,6 +36,7 @@ import com.dijitalanit.repository.RefreshTokenRepository;
 import com.dijitalanit.repository.UserRepository;
 import com.dijitalanit.service.IAuthenticationService;
 import com.dijitalanit.service.IMailService;
+import com.dijitalanit.utils.InputSanitizer;
 
 @Service
 public class AuthenticationServiceImpl implements IAuthenticationService {
@@ -53,15 +59,18 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	@Autowired
 	private IMailService mailService;
 
+	@Autowired
+	private RateLimitingService rateLimitingService;
+
 	@Value("${app.jwt.refresh-token-expiration}")
 	private long refreshTokenExpiration;
 
 	private User createUser(RegisterRequest input) {
 		User user = new User();
 		user.setCreateTime(new Date());
-		user.setUsername(input.getUsername());
-		user.setEmail(input.getEmail());
-		user.setPhoneNumber(input.getPhoneNumber());
+		user.setUsername(InputSanitizer.sanitize(input.getUsername()));
+		user.setEmail(InputSanitizer.sanitizeEmail(input.getEmail()));
+		user.setPhoneNumber(input.getPhoneNumber()); // Already validated by @Pattern
 		user.setPassword(passwordEncoder.encode(input.getPassword()));
 		user.setRole(UserRole.USER);
 		user.setIsVerified(true);
@@ -153,6 +162,13 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
 	@Override
 	public AuthResponse verifyTwoFactorCode(TwoFactorVerifyRequest request) {
+		// ── RATE LIMITING: Brute-force koruması ──
+		String rateLimitKey = "2fa_" + request.getTwoFactorToken();
+		if (!rateLimitingService.tryConsume(rateLimitKey)) {
+			throw new BaseException(new ErrorMessage(MessageType.RATE_LIMIT_EXCEEDED,
+				"3 hatalı deneme sonrası hesap 15 dakika kilitlenmiştir."));
+		}
+
 		Optional<User> optUser = userRepository.findAll().stream()
 				.filter(u -> request.getTwoFactorToken().equals(u.getTwoFactorToken()))
 				.findFirst();
@@ -168,10 +184,12 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 		}
 		
 		if (!request.getCode().equals(user.getTwoFactorCode())) {
-			throw new RuntimeException("Hatalı doğrulama kodu.");
+			long remaining = rateLimitingService.getRemainingAttempts(rateLimitKey);
+			throw new RuntimeException("Hatalı doğrulama kodu. Kalan deneme hakkı: " + remaining);
 		}
 
-		// Success! Clear 2FA data and generate real tokens
+		// Success! Clear 2FA data, reset rate limit, and generate real tokens
+		rateLimitingService.resetLimit(rateLimitKey);
 		user.setTwoFactorCode(null);
 		user.setTwoFactorExpiry(null);
 		user.setTwoFactorToken(null);
@@ -219,5 +237,109 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	private String maskPhone(String phone) {
 		if (phone.length() < 6) return phone;
 		return phone.substring(0, 3) + "***" + phone.substring(phone.length() - 2);
+	}
+
+	@Override
+	public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest input) {
+		Optional<User> optUser = userRepository.findAll().stream()
+				.filter(u -> input.getEmail().equalsIgnoreCase(u.getEmail()))
+				.findFirst();
+
+		if (optUser.isEmpty()) {
+			// Do not leak if user exists or not
+			throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, "Geçersiz işlem."));
+		}
+
+		User user = optUser.get();
+		String resetToken = UUID.randomUUID().toString();
+		user.setResetPasswordToken(resetToken);
+		userRepository.save(user);
+
+		ForgotPasswordResponse response = new ForgotPasswordResponse();
+		response.setResetToken(resetToken);
+		if (user.getEmail() != null) response.setMaskedEmail(maskEmail(user.getEmail()));
+		if (user.getPhoneNumber() != null) response.setMaskedPhone(maskPhone(user.getPhoneNumber()));
+		
+		return response;
+	}
+
+	@Override
+	public void sendResetCode(ResetCodeSendRequest request) throws Exception {
+		Optional<User> optUser = userRepository.findAll().stream()
+				.filter(u -> request.getResetToken().equals(u.getResetPasswordToken()))
+				.findFirst();
+
+		if (optUser.isEmpty()) {
+			throw new RuntimeException("Geçersiz veya süresi dolmuş işlem.");
+		}
+
+		User user = optUser.get();
+		String code = String.format("%06d", new Random().nextInt(999999));
+		user.setResetPasswordCode(code);
+		user.setResetPasswordExpiry(new Date(System.currentTimeMillis() + 3 * 60 * 1000)); // 3 mins validity
+		userRepository.save(user);
+
+		if ("EMAIL".equalsIgnoreCase(request.getMethod())) {
+			mailService.sendTwoFactorEmail(user.getEmail(), user.getUsername(), code);
+		} else if ("SMS".equalsIgnoreCase(request.getMethod())) {
+			System.out.println("ŞİFRE SIFIRLAMA SMS GÖNDERİLDİ: " + user.getPhoneNumber() + " -> KOD: " + code);
+		} else {
+			throw new RuntimeException("Geçersiz doğrulama yöntemi.");
+		}
+	}
+
+	@Override
+	public void verifyResetCode(ResetCodeVerifyRequest request) {
+		String rateLimitKey = "reset_" + request.getResetToken();
+		if (!rateLimitingService.tryConsume(rateLimitKey)) {
+			throw new BaseException(new ErrorMessage(MessageType.RATE_LIMIT_EXCEEDED,
+				"3 hatalı deneme sonrası işlem 15 dakika kilitlenmiştir."));
+		}
+
+		Optional<User> optUser = userRepository.findAll().stream()
+				.filter(u -> request.getResetToken().equals(u.getResetPasswordToken()))
+				.findFirst();
+
+		if (optUser.isEmpty()) {
+			throw new RuntimeException("Geçersiz veya süresi dolmuş işlem.");
+		}
+
+		User user = optUser.get();
+		
+		if (user.getResetPasswordExpiry() == null || new Date().after(user.getResetPasswordExpiry())) {
+			throw new RuntimeException("Doğrulama kodunun süresi dolmuş.");
+		}
+		
+		if (!request.getCode().equals(user.getResetPasswordCode())) {
+			long remaining = rateLimitingService.getRemainingAttempts(rateLimitKey);
+			throw new RuntimeException("Hatalı doğrulama kodu. Kalan deneme hakkı: " + remaining);
+		}
+
+		rateLimitingService.resetLimit(rateLimitKey);
+		// Do not clear token yet, it will be used for setting new password
+		user.setResetPasswordCode(null);
+		user.setResetPasswordExpiry(null);
+		userRepository.save(user);
+	}
+
+	@Override
+	public void resetPassword(ResetPasswordRequest request) {
+		Optional<User> optUser = userRepository.findAll().stream()
+				.filter(u -> request.getResetToken().equals(u.getResetPasswordToken()))
+				.findFirst();
+
+		if (optUser.isEmpty()) {
+			throw new RuntimeException("Geçersiz veya süresi dolmuş işlem.");
+		}
+
+		User user = optUser.get();
+		// If verification code is still there, it means it wasn't verified
+		if (user.getResetPasswordExpiry() != null) {
+			throw new RuntimeException("Önce doğrulama yapmalısınız.");
+		}
+
+		user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+		user.setResetPasswordToken(null); // Clear the token completely
+		userRepository.save(user);
 	}
 }

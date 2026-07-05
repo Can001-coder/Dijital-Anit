@@ -20,6 +20,12 @@ public enum MessageType {
 	INVALID_ACTION_TYPE("1016", "Geçersiz işlem tipi"),
 	COMMENT_EMPTY("1017", "Yorum metni boş olamaz"),
 	INVALID_VERIFICATION_TOKEN("1018", "Geçersiz veya süresi dolmuş doğrulama bağlantısı"),
+	RATE_LIMIT_EXCEEDED("1019", "Çok fazla hatalı deneme. Lütfen 15 dakika sonra tekrar deneyin."),
+	FILE_TOO_LARGE("1020", "Dosya boyutu izin verilen sınırı aşıyor"),
+	INVALID_MIME_TYPE("1021", "Dosya içeriği izin verilen türlerle eşleşmiyor"),
+	INVALID_PHONE_FORMAT("1022", "Telefon numarası başında 0 olmadan 10 haneli olmalıdır (Örn: 5551234567)"),
+	INVALID_EMAIL_FORMAT("1023", "Geçerli bir e-posta adresi giriniz"),
+	OTP_VERIFICATION_REQUIRED("1024", "Değişikliği onaylamak için doğrulama kodu gereklidir"),
 	GENERAL_EXCEPTION("9999", "Genel bir hata oluştu");
 
 	private String code;

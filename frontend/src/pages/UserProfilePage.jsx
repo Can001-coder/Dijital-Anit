@@ -2,14 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Api from '../api';
 import { showFlash } from '../components/FlashMessage';
+import { validatePhone, validateEmail } from '../utils/validation';
 
 const UserProfilePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [originalUser, setOriginalUser] = useState(null); // Değişiklik tespiti için orijinal veriler
   const [memorial, setMemorial] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updatingSettings, setUpdatingSettings] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  // Validasyon hata state'leri
+  const [emailError, setEmailError] = useState(null);
+  const [phoneError, setPhoneError] = useState(null);
+
+
 
   useEffect(() => {
     if (!Api.isLoggedIn()) {
@@ -30,6 +38,7 @@ const UserProfilePage = () => {
         const settingsRes = await Api.getUserSettings();
         if (settingsRes && settingsRes.status === 200 && settingsRes.payload) {
           setUser(settingsRes.payload);
+          setOriginalUser(settingsRes.payload);
         }
       } catch (e) {
         console.error('Error fetching profile data:', e);
@@ -96,16 +105,66 @@ const UserProfilePage = () => {
     }
   };
 
+  // ── E-posta validasyonu ──
+  const handleEmailChange = (e) => {
+    const val = e.target.value;
+    setUser({ ...user, email: val });
+    if (val.length > 0) {
+      setEmailError(validateEmail(val));
+    } else {
+      setEmailError(null);
+    }
+
+  };
+
+  const handleEmailBlur = () => {
+    if (user?.email) {
+      setEmailError(validateEmail(user.email));
+    }
+  };
+
+  // ── Telefon validasyonu ──
+  const handlePhoneChange = (e) => {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setUser({ ...user, phoneNumber: raw });
+    if (raw.length > 0) {
+      setPhoneError(validatePhone(raw));
+    } else {
+      setPhoneError(null);
+    }
+
+  };
+
+  const handlePhoneBlur = () => {
+    if (user?.phoneNumber && user.phoneNumber.length > 0) {
+      setPhoneError(validatePhone(user.phoneNumber));
+    }
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
+
+    // Validasyon kontrolleri
+    const eErr = user?.email ? validateEmail(user.email) : null;
+    const pErr = user?.phoneNumber ? validatePhone(user.phoneNumber) : null;
+    setEmailError(eErr);
+    setPhoneError(pErr);
+
+    if (eErr || pErr) {
+      showFlash('Lütfen formdaki hataları düzeltin.', 'error');
+      return;
+    }
+
     setUpdatingSettings(true);
     try {
       const res = await Api.updateUserProfile(user.email, user.phoneNumber);
       if (res && res.status === 200 && res.payload) {
         setUser(res.payload);
+        setOriginalUser(res.payload);
         showFlash('Kişisel bilgileriniz başarıyla güncellendi.', 'success');
       } else {
-        showFlash(res?.errorMessage || 'Güncellenirken bir hata oluştu.', 'error');
+        const errMsg = res?.errorMessage || '';
+        showFlash(errMsg || 'Güncellenirken bir hata oluştu.', 'error');
       }
     } catch (e) {
       showFlash('Bağlantı hatası.', 'error');
@@ -182,33 +241,51 @@ const UserProfilePage = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', fontSize: '14px', color: '#5D705D' }}>E-Posta Adresi</label>
-              <input 
-                type="email" 
-                value={user?.email || ''} 
-                onChange={(e) => setUser({...user, email: e.target.value})} 
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #DDE2DB', outline: 'none' }} 
-                required 
+              <input
+                type="email"
+                value={user?.email || ''}
+                onChange={handleEmailChange}
+                onBlur={handleEmailBlur}
+                style={{
+                  width: '100%', padding: '12px', borderRadius: '8px',
+                  border: emailError ? '1px solid #e74c3c' : '1px solid #DDE2DB',
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
+                }}
+                required
               />
+              {emailError && <span style={{ color: '#e74c3c', fontSize: '12px', marginTop: '4px', display: 'block' }}>{emailError}</span>}
+              {!emailError && user?.email && user.email.length > 0 && <span style={{ color: '#27ae60', fontSize: '12px', marginTop: '4px', display: 'block' }}>✓ Geçerli e-posta</span>}
             </div>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', fontSize: '14px', color: '#5D705D' }}>Telefon Numarası</label>
-              <input 
-                type="tel" 
-                value={user?.phoneNumber || ''} 
-                onChange={(e) => setUser({...user, phoneNumber: e.target.value.replace(/\D/g, '').slice(0, 10)})} 
+              <input
+                type="tel"
+                value={user?.phoneNumber || ''}
+                onChange={handlePhoneChange}
+                onBlur={handlePhoneBlur}
                 placeholder="5XX XXX XX XX"
                 maxLength={10}
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #DDE2DB', outline: 'none' }} 
+                style={{
+                  width: '100%', padding: '12px', borderRadius: '8px',
+                  border: phoneError ? '1px solid #e74c3c' : '1px solid #DDE2DB',
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
+                }}
               />
+              {phoneError && <span style={{ color: '#e74c3c', fontSize: '12px', marginTop: '4px', display: 'block' }}>{phoneError}</span>}
+              {!phoneError && user?.phoneNumber && user.phoneNumber.length === 10 && <span style={{ color: '#27ae60', fontSize: '12px', marginTop: '4px', display: 'block' }}>✓ Geçerli telefon numarası</span>}
             </div>
           </div>
+
           <div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={updatingSettings}
               style={{
                 background: '#5D705D', color: '#fff', border: 'none', padding: '12px 25px', borderRadius: '8px',
-                fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.3s'
+                fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.3s',
+                opacity: updatingSettings ? 0.6 : 1
               }}
             >
               {updatingSettings ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
@@ -458,13 +535,13 @@ const UserProfilePage = () => {
               Bu işlem geri alınamaz. Anıtınız ve ilgili tüm veriler kalıcı olarak silinecektir. Silmek istediğinize emin misiniz?
             </p>
             <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
-              <button 
+              <button
                 onClick={() => setDeleteModalOpen(false)}
                 style={{ flex: 1, padding: '12px', fontSize: '16px', borderRadius: '8px', background: '#ccc', color: '#333', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
               >
                 Hayır, İptal
               </button>
-              <button 
+              <button
                 onClick={handleDeleteMemorial}
                 style={{ flex: 1, padding: '12px', fontSize: '16px', borderRadius: '8px', background: '#e74c3c', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
               >

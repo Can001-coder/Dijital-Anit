@@ -40,7 +40,7 @@ public class RestUserControllerImpl extends RestBaseController {
 	private com.dijitalanit.scheduler.AnniversaryMailScheduler anniversaryMailScheduler;
 
 	@PostMapping("/rest/api/user/update-profile")
-	public RootEntity<DtoUser> updateProfile(@org.springframework.web.bind.annotation.RequestBody com.dijitalanit.dto.UpdateProfileRequest request) {
+	public RootEntity<DtoUser> updateProfile(@jakarta.validation.Valid @org.springframework.web.bind.annotation.RequestBody com.dijitalanit.dto.UpdateProfileRequest request) {
 		return ok(userService.updateProfile(request));
 	}
 

@@ -14,6 +14,11 @@ import com.dijitalanit.dto.AuthResponse;
 import com.dijitalanit.dto.DtoUser;
 import com.dijitalanit.dto.RefreshTokenRequest;
 import com.dijitalanit.dto.RegisterRequest;
+import com.dijitalanit.dto.ForgotPasswordRequest;
+import com.dijitalanit.dto.ForgotPasswordResponse;
+import com.dijitalanit.dto.ResetCodeSendRequest;
+import com.dijitalanit.dto.ResetCodeVerifyRequest;
+import com.dijitalanit.dto.ResetPasswordRequest;
 import com.dijitalanit.service.IAuthenticationService;
 
 import jakarta.validation.Valid;
@@ -54,5 +59,32 @@ public class RestAuthControllerImpl extends RestBaseController implements IRestA
 	@Override
 	public RootEntity<AuthResponse> verifyTwoFactorCode(@Valid @RequestBody com.dijitalanit.dto.TwoFactorVerifyRequest input) {
 		return ok(authenticationService.verifyTwoFactorCode(input));
+	}
+
+	@PostMapping("/forgot-password")
+	@Override
+	public RootEntity<ForgotPasswordResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest input) {
+		return ok(authenticationService.forgotPassword(input));
+	}
+
+	@PostMapping("/send-reset-code")
+	@Override
+	public RootEntity<Boolean> sendResetCode(@Valid @RequestBody ResetCodeSendRequest input) throws Exception {
+		authenticationService.sendResetCode(input);
+		return ok(true);
+	}
+
+	@PostMapping("/verify-reset-code")
+	@Override
+	public RootEntity<Boolean> verifyResetCode(@Valid @RequestBody ResetCodeVerifyRequest input) {
+		authenticationService.verifyResetCode(input);
+		return ok(true);
+	}
+
+	@PostMapping("/reset-password")
+	@Override
+	public RootEntity<Boolean> resetPassword(@Valid @RequestBody ResetPasswordRequest input) {
+		authenticationService.resetPassword(input);
+		return ok(true);
 	}
 }

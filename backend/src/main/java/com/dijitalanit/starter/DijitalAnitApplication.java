@@ -61,7 +61,7 @@ public class DijitalAnitApplication {
 				java.time.LocalDate testDeathDate = java.time.LocalDate.of(2020, tomorrow.getMonthValue(), tomorrow.getDayOfMonth());
 
 				boolean memorialExists = memorialRepository.findAll().stream()
-						.anyMatch(m -> m.getUser().getId().equals(user.getId()) && testDeathDate.equals(m.getDeathDate()));
+						.anyMatch(m -> m.getUser() != null && m.getUser().getId().equals(user.getId()) && testDeathDate.equals(m.getDeathDate()));
 
 				if (!memorialExists) {
 					com.dijitalanit.model.Memorial memorial = new com.dijitalanit.model.Memorial();

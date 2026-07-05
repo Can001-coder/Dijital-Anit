@@ -1,20 +1,32 @@
 package com.dijitalanit.service.impl;
 
+import java.util.Date;
+import java.util.Random;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.dijitalanit.dto.DtoUser;
+import com.dijitalanit.dto.UpdateProfileRequest;
+import com.dijitalanit.exception.BaseException;
+import com.dijitalanit.exception.ErrorMessage;
+import com.dijitalanit.exception.MessageType;
 import com.dijitalanit.model.User;
 import com.dijitalanit.repository.UserRepository;
+import com.dijitalanit.service.IMailService;
 import com.dijitalanit.service.IUserService;
+import com.dijitalanit.utils.InputSanitizer;
 
 @Service
 public class UserServiceImpl implements IUserService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private IMailService mailService;
 
 	private User getCurrentUser() {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -43,19 +55,27 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public DtoUser updateProfile(com.dijitalanit.dto.UpdateProfileRequest request) {
+	public DtoUser updateProfile(UpdateProfileRequest request) {
 		User user = getCurrentUser();
 		
-		// Eğer email değişiyorsa ve yeni email başkası tarafından kullanılıyorsa hata fırlat
-		if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
-			if (userRepository.existsByEmail(request.getEmail())) {
+		boolean emailChanged = request.getEmail() != null && !request.getEmail().isBlank()
+				&& !request.getEmail().equals(user.getEmail());
+		boolean phoneChanged = request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()
+				&& !request.getPhoneNumber().equals(user.getPhoneNumber());
+
+
+		// ── E-posta güncelleme ──
+		if (emailChanged) {
+			String sanitizedEmail = InputSanitizer.sanitizeEmail(request.getEmail());
+			if (userRepository.existsByEmail(sanitizedEmail)) {
 				throw new RuntimeException("Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.");
 			}
-			user.setEmail(request.getEmail());
+			user.setEmail(sanitizedEmail);
 		}
 
-		if (request.getPhoneNumber() != null) {
-			user.setPhoneNumber(request.getPhoneNumber());
+		// ── Telefon güncelleme ──
+		if (phoneChanged) {
+			user.setPhoneNumber(request.getPhoneNumber()); // @Pattern ile doğrulanmış
 		}
 
 		User saved = userRepository.save(user);

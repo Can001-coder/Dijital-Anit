@@ -64,6 +64,15 @@ public class User extends BaseEntity implements UserDetails {
 	@Column(name = "two_factor_expiry")
 	private java.util.Date twoFactorExpiry;
 
+	@Column(name = "reset_password_token", length = 100)
+	private String resetPasswordToken;
+
+	@Column(name = "reset_password_code", length = 10)
+	private String resetPasswordCode;
+
+	@Column(name = "reset_password_expiry")
+	private java.util.Date resetPasswordExpiry;
+
 	public Boolean getAnniversaryNotificationsEnabled() {
 		return anniversaryNotificationsEnabled == null ? true : anniversaryNotificationsEnabled;
 	}

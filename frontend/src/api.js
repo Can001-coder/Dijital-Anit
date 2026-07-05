@@ -151,6 +151,74 @@ const Api = {
         }
     },
 
+    async forgotPassword(email) {
+        try {
+            const resp = await fetch(API_BASE + '/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await resp.json();
+            if (data.status === 200 && data.payload) {
+                return { success: true, payload: data.payload };
+            }
+            return { success: false, error: data.errorMessage || 'Geçersiz işlem.' };
+        } catch(e) {
+            return { success: false, error: 'Sunucuya bağlanılamadı: ' + e.message };
+        }
+    },
+
+    async sendResetCode(resetToken, method) {
+        try {
+            const resp = await fetch(API_BASE + '/auth/send-reset-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ resetToken, method })
+            });
+            const data = await resp.json();
+            if (data.status === 200) {
+                return { success: true };
+            }
+            return { success: false, error: data.errorMessage || 'Kod gönderilemedi.' };
+        } catch(e) {
+            return { success: false, error: 'Sunucuya bağlanılamadı: ' + e.message };
+        }
+    },
+
+    async verifyResetCode(resetToken, code) {
+        try {
+            const resp = await fetch(API_BASE + '/auth/verify-reset-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ resetToken, code })
+            });
+            const data = await resp.json();
+            if (data.status === 200) {
+                return { success: true };
+            }
+            return { success: false, error: data.errorMessage || 'Doğrulama başarısız.' };
+        } catch(e) {
+            return { success: false, error: 'Sunucuya bağlanılamadı: ' + e.message };
+        }
+    },
+
+    async resetPassword(resetToken, newPassword) {
+        try {
+            const resp = await fetch(API_BASE + '/auth/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ resetToken, newPassword })
+            });
+            const data = await resp.json();
+            if (data.status === 200) {
+                return { success: true };
+            }
+            return { success: false, error: data.errorMessage || 'Şifre güncellenemedi.' };
+        } catch(e) {
+            return { success: false, error: 'Sunucuya bağlanılamadı: ' + e.message };
+        }
+    },
+
     async doRefreshToken() {
         try {
             const resp = await fetch(API_BASE + '/auth/refresh-token', {
@@ -189,11 +257,11 @@ const Api = {
         return this.json('/user/settings?enabled=' + enabled, { method: 'POST' });
     },
 
-    async updateUserProfile(email, phoneNumber) {
+    async updateUserProfile(email, phoneNumber, otpCode) {
         return this.json('/user/update-profile', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, phoneNumber })
+            body: JSON.stringify({ email, phoneNumber, otpCode })
         });
     },
 

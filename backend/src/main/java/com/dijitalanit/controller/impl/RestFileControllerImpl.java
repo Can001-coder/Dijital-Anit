@@ -26,6 +26,7 @@ import com.dijitalanit.model.User;
 import com.dijitalanit.repository.MediaRepository;
 import com.dijitalanit.repository.MemorialRepository;
 import com.dijitalanit.repository.UserRepository;
+import com.dijitalanit.service.IFileUploadService;
 import com.dijitalanit.service.IImageService;
 import com.dijitalanit.service.IQrCodeService;
 
@@ -42,6 +43,9 @@ public class RestFileControllerImpl extends RestBaseController {
 
 	@Autowired
 	private IImageService imageService;
+
+	@Autowired
+	private IFileUploadService fileUploadService;
 
 	@Autowired
 	private IQrCodeService qrCodeService;
@@ -117,14 +121,15 @@ public class RestFileControllerImpl extends RestBaseController {
 		String fileType;
 
 		if (IMAGE_EXTS.contains(ext)) {
-			filePath = imageService.optimizeAndSave(file, "visitor_" + memorialId, 1200);
+			// ── GÜVENLİ YÜKLEME: Magic Byte + UUID + Boyut kontrolü ──
+			filePath = fileUploadService.uploadImage(file, "visitor_" + memorialId, 1200);
 			fileType = "visitor_image";
+		} else if (AUDIO_EXTS.contains(ext)) {
+			filePath = fileUploadService.uploadAudio(file, "visitor_" + memorialId);
+			fileType = "visitor_audio";
 		} else if (VIDEO_EXTS.contains(ext)) {
 			filePath = imageService.saveFile(file, "video", "visitor_" + memorialId);
 			fileType = "visitor_video";
-		} else if (AUDIO_EXTS.contains(ext)) {
-			filePath = imageService.saveFile(file, "audio", "visitor_" + memorialId);
-			fileType = "visitor_audio";
 		} else {
 			throw new BaseException(new ErrorMessage(MessageType.INVALID_FILE_FORMAT, ext));
 		}
@@ -135,46 +140,41 @@ public class RestFileControllerImpl extends RestBaseController {
 	}
 
 	// ==================== DASHBOARD MEDYA YÜKLEME (Authenticated) ====================
-	// Profil fotoğrafı yükle
+	// Profil fotoğrafı yükle — GÜVENLİ (Magic Byte + UUID + 5MB limit)
 	@PostMapping("/rest/api/dashboard/upload/profile-image")
 	public RootEntity<String> uploadProfileImage(@RequestParam("file") MultipartFile file) {
 		Memorial memorial = getAuthenticatedMemorial();
-		String filePath = imageService.optimizeAndSave(file, String.valueOf(memorial.getId()), 800);
+		String filePath = fileUploadService.uploadImage(file, String.valueOf(memorial.getId()), 800);
 
 		// Owner'ın yüklediği profil fotoğrafı otomatik onaylı
 		saveOrUpdateMedia(memorial, filePath, "image", "owner", true);
 		return ok(filePath);
 	}
 
-	// Galeri fotoğrafları yükle (çoklu)
+	// Galeri fotoğrafları yükle (çoklu) — GÜVENLİ
 	@PostMapping("/rest/api/dashboard/upload/gallery")
 	public RootEntity<String> uploadGallery(@RequestParam("files") MultipartFile[] files) {
 		Memorial memorial = getAuthenticatedMemorial();
 		int count = 0;
 		for (MultipartFile file : files) {
 			if (file.isEmpty()) continue;
-			String filePath = imageService.optimizeAndSave(file, "gallery_" + memorial.getId(), 1200);
+			String filePath = fileUploadService.uploadImage(file, "gallery_" + memorial.getId(), 1200);
 			saveNewMedia(memorial, filePath, "gallery", "owner", true);
 			count++;
 		}
 		return ok(count + " fotoğraf yüklendi");
 	}
 
-	// Ses dosyası yükle (yasin, fatiha, voice, music)
+	// Ses dosyası yükle (yasin, fatiha, voice, music) — GÜVENLİ
 	@PostMapping("/rest/api/dashboard/upload/audio")
 	public RootEntity<String> uploadAudio(
 			@RequestParam("file") MultipartFile file,
 			@RequestParam("audioType") String audioType) {
-			
-		String ext = getExt(file.getOriginalFilename());
-		if (!AUDIO_EXTS.contains(ext)) {
-			throw new BaseException(new ErrorMessage(MessageType.INVALID_FILE_FORMAT, ext));
-		}
 
 		Memorial memorial = getAuthenticatedMemorial();
 
-		// audioType: audio_yasin, audio_fatiha, audio_voice, audio_music
-		String filePath = imageService.saveFile(file, "audio", memorial.getId() + "_" + audioType);
+		// ── GÜVENLİ YÜKLEME: Magic Byte + UUID + 10MB limit ──
+		String filePath = fileUploadService.uploadAudio(file, memorial.getId() + "_" + audioType);
 
 		saveOrUpdateMedia(memorial, filePath, audioType, "owner", true);
 		return ok(filePath);
@@ -184,7 +184,7 @@ public class RestFileControllerImpl extends RestBaseController {
 	private Memorial getAuthenticatedMemorial() {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		User user = userRepository.findByUsername(username).orElseThrow();
-		return memorialRepository.findByUserId(user.getId())
+		return memorialRepository.findFirstByUserIdOrderByIdDesc(user.getId())
 				.orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.MEMORIAL_NOT_FOUND, "Önce anıt oluşturun")));
 	}
 

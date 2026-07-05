@@ -28,7 +28,7 @@ public class MemorialCreateDto {
 	private String lastName;
 
 	@NotBlank(message = "Biyografi alanı boş bırakılamaz")
-	@Size(min = 10, max = 1000, message = "Biyografi en az 10, en fazla 1000 karakter olabilir")
+	@Size(max = 1000, message = "Biyografi en fazla 1000 karakter olabilir")
 	private String bio;
 
 	@jakarta.validation.constraints.NotNull(message = "Doğum tarihi boş bırakılamaz")

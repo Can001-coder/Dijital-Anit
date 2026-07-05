@@ -59,5 +59,3 @@ NFC etiketleriyle işaretlenmiş mezarların Google Maps üzerinde interaktif g�
 | 1 | Mail Entegrasyonu | 🔴 Yüksek | Orta |
 | 2 | Mesleğe Özel Tema | 🟡 Orta | Orta |
 | 3 | Harita + NFC | 🔴 Yüksek | Yüksek |
-
-Ana ekrandan kategoriler kaldırılacak

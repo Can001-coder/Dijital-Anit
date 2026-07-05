@@ -5,13 +5,14 @@ import Api from '../api';
 import { showFlash } from '../components/FlashMessage';
 import citiesData from '../data/cities.json';
 import { sanitizeInput } from '../utils/sanitize';
+import CustomValidatedInput from '../components/CustomValidatedInput';
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const total = 6;
   const [saving, setSaving] = useState(false);
-  const [infoModal, setInfoModal] = useState({ isOpen: false, text: '' });
+  const [saveMessage, setSaveMessage] = useState({ text: '', type: '' });
   const [timelineYear, setTimelineYear] = useState('');
   const [timelineEvent, setTimelineEvent] = useState('');
   const [workYear, setWorkYear] = useState('');
@@ -33,26 +34,36 @@ const DashboardPage = () => {
     'Diğer': []
   };
 
+  const [formErrors, setFormErrors] = useState({});
+
   const validateStep = (currentStep) => {
+    let isValid = true;
+    const errors = {};
+
     if (currentStep === 1) {
-      if (!form.firstName?.trim() || !form.lastName?.trim() || !form.bio?.trim() || !form.birthDate || !form.deathDate) {
-        setInfoModal({ isOpen: true, text: 'Lütfen 1. Adımdaki zorunlu alanları (Ad, Soyad, Biyografi, Doğum Tarihi, Ölüm Tarihi) doldurunuz.' });
-        return false;
-      }
+      if (!form.firstName?.trim()) { errors.firstName = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      if (!form.lastName?.trim()) { errors.lastName = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      if (!form.bio?.trim()) { errors.bio = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      if (!form.birthDate) { errors.birthDate = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      else if (new Date(form.birthDate) > new Date()) { errors.birthDate = 'Geçersiz tarih'; isValid = false; }
+      if (!form.deathDate) { errors.deathDate = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      else if (new Date(form.deathDate) > new Date()) { errors.deathDate = 'Geçersiz tarih'; isValid = false; }
     }
     if (currentStep === 2) {
-      if (!form.traits?.trim() || !form.langAna?.trim()) {
-        setInfoModal({ isOpen: true, text: 'Lütfen 2. Adımdaki zorunlu alanları (Kişilik Özellikleri, Konuştuğu Diller) doldurunuz.' });
-        return false;
-      }
+      if (!form.traits?.trim()) { errors.traits = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      if (!form.langAna?.trim()) { errors.langAna = 'Lütfen bu alanı doldurun.'; isValid = false; }
     }
     if (currentStep === 4) {
-      if (!form.city?.trim() || !form.district?.trim() || !form.occupation?.trim() || !form.gender?.trim() || !form.deathCause?.trim() || !form.graveLocation?.trim()) {
-        setInfoModal({ isOpen: true, text: 'Lütfen 4. Adımdaki zorunlu alanları (Şehir, İlçe, Meslek, Cinsiyet, Ölüm Nedeni, Mezarlık Mevkisi) doldurunuz.' });
-        return false;
-      }
+      if (!form.city?.trim()) { errors.city = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      if (!form.district?.trim()) { errors.district = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      if (!form.occupation?.trim()) { errors.occupation = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      if (!form.gender?.trim()) { errors.gender = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      if (!form.deathCause?.trim()) { errors.deathCause = 'Lütfen bu alanı doldurun.'; isValid = false; }
+      if (!form.graveLocation?.trim()) { errors.graveLocation = 'Lütfen bu alanı doldurun.'; isValid = false; }
     }
-    return true;
+
+    setFormErrors(errors);
+    return isValid;
   };
 
   // Form State Definitions
@@ -114,7 +125,7 @@ const DashboardPage = () => {
       if (!mapInstanceRef.current) {
         const tLat = form.lat || 39.9251;
         const tLng = form.lng || 32.8369;
-        
+
         const map = L.map(mapRef.current).setView([tLat, tLng], 6);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap'
@@ -150,7 +161,7 @@ const DashboardPage = () => {
         const { lat, lon } = data[0];
         const newLat = parseFloat(lat);
         const newLng = parseFloat(lon);
-        
+
         if (mapInstanceRef.current) {
           mapInstanceRef.current.setView([newLat, newLng], 14);
           setForm(prev => ({ ...prev, lat: newLat, lng: newLng }));
@@ -161,10 +172,10 @@ const DashboardPage = () => {
           }
         }
       } else {
-        setInfoModal({ isOpen: true, text: 'Aradığınız adres bulunamadı.' });
+        showFlash('Aradığınız adres bulunamadı.', 'error');
       }
     } catch (e) {
-      setInfoModal({ isOpen: true, text: 'Adres aranırken bir hata oluştu.' });
+      showFlash('Adres aranırken bir hata oluştu.', 'error');
     }
   };
 
@@ -183,42 +194,55 @@ const DashboardPage = () => {
   const handleChange = (e) => {
     const { id, value, type, checked, maxLength } = e.target;
     let finalValue = type === 'checkbox' ? checked : value;
-    
+
     if (typeof finalValue === 'string') {
       finalValue = sanitizeInput(finalValue);
     }
+
+    const noNumberFields = ['firstName', 'lastName', 'city', 'district', 'occupation', 'langAna', 'langUzmanlik', 'makesLaugh', 'makesCry', 'deathCause', 'graveLocation', 'graveWill', 'traits', 'flower', 'food', 'sports', 'museums'];
+    let errorMsg = null;
+
     if ((id === 'birthDate' || id === 'deathDate') && finalValue) {
       const selectedDate = new Date(finalValue);
       const today = new Date();
       if (selectedDate > today) {
-        finalValue = today.toISOString().split('T')[0];
-        setInfoModal({ isOpen: true, text: 'İleri bir tarih seçemezsiniz. Bugünün tarihi atandı.' });
+        errorMsg = 'Geçersiz tarih';
       }
+    } else if (noNumberFields.includes(id) && /\d/.test(finalValue)) {
+      if (id === 'firstName') errorMsg = 'Geçersiz ad';
+      else if (id === 'lastName') errorMsg = 'Geçersiz soyad';
+      else if (id === 'city') errorMsg = 'Geçersiz il';
+      else if (id === 'district') errorMsg = 'Geçersiz ilçe';
+      else if (id === 'occupation') errorMsg = 'Geçersiz meslek';
+      else if (id === 'langAna' || id === 'langUzmanlik') errorMsg = 'Geçersiz dil';
+      else if (id === 'deathCause') errorMsg = 'Geçersiz ölüm nedeni';
+      else if (id === 'graveLocation') errorMsg = 'Geçersiz mevki';
+      else if (id === 'graveWill') errorMsg = 'Geçersiz vasiyet';
+      else if (id === 'traits') errorMsg = 'Geçersiz özellik';
+      else if (id === 'flower') errorMsg = 'Geçersiz çiçek';
+      else if (id === 'food') errorMsg = 'Geçersiz yemek';
+      else if (id === 'sports') errorMsg = 'Geçersiz spor';
+      else if (id === 'museums') errorMsg = 'Geçersiz müze';
+      else errorMsg = 'Geçersiz girdi';
     }
-    
+
+    setFormErrors(prev => ({ ...prev, [id]: errorMsg }));
     setForm(prev => ({ ...prev, [id]: finalValue }));
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     if (!validateStep(1) || !validateStep(2) || !validateStep(4)) {
-        return;
+      return;
     }
     setSaving(true);
     const res = await Api.saveMemorial(form);
     if (res?.status === 200) {
-      setInfoModal({ isOpen: true, text: 'Anıt başarıyla kaydedildi ve onaya gönderildi!' });
+      setSaveMessage({ text: 'Anıtınız başarıyla kaydedildi ve onaya gönderildi!', type: 'success' });
     } else {
-      setInfoModal({ isOpen: true, text: res?.errorMessage || 'Kayıt başarısız' });
+      setSaveMessage({ text: res?.errorMessage || 'Kayıt başarısız', type: 'error' });
     }
     setSaving(false);
-  };
-
-  const renderLimitWarning = (id, max) => {
-    if (form[id] && form[id].length >= max) {
-      return <span style={{ color: '#e74c3c', fontSize: '12px', position: 'absolute', bottom: '-18px', left: '0', display: 'block' }}>Maksimum karakter sınırına ({max}) ulaştınız.</span>;
-    }
-    return null;
   };
 
 
@@ -256,13 +280,13 @@ const DashboardPage = () => {
     const newEntry = `${timelineYear}: ${timelineEvent}`;
     let currentEntries = form.timeline ? form.timeline.split('\n').filter(Boolean) : [];
     currentEntries.push(newEntry);
-    
+
     currentEntries.sort((a, b) => {
       const yearA = parseInt(a.split(':')[0].trim()) || 0;
       const yearB = parseInt(b.split(':')[0].trim()) || 0;
       return yearA - yearB;
     });
-    
+
     setForm(prev => ({ ...prev, timeline: currentEntries.join('\n') }));
     setTimelineYear('');
     setTimelineEvent('');
@@ -294,13 +318,13 @@ const DashboardPage = () => {
     const newEntry = `${workYear}: ${workName}`;
     let currentEntries = form.works ? form.works.split('\n').filter(Boolean) : [];
     currentEntries.push(newEntry);
-    
+
     currentEntries.sort((a, b) => {
       const yearA = parseInt(a.split(':')[0].trim()) || 0;
       const yearB = parseInt(b.split(':')[0].trim()) || 0;
       return yearA - yearB;
     });
-    
+
     setForm(prev => ({ ...prev, works: currentEntries.join('\n') }));
     setWorkYear('');
     setWorkName('');
@@ -331,7 +355,7 @@ const DashboardPage = () => {
     }
 
     let currentEntries = form.physical ? form.physical.split('\n').filter(Boolean) : [];
-    
+
     const typeExists = currentEntries.some(entry => entry.split(':')[0].trim() === physicalType);
     if (typeExists) {
       setInfoModal({ isOpen: true, text: `"${physicalType}" özelliği zaten eklenmiş. Lütfen mevcut olanı düzenleyin veya silin.` });
@@ -383,29 +407,29 @@ const DashboardPage = () => {
         <div className="wizard-step-panel" style={{ display: step === 1 ? 'block' : 'none' }}>
           <h3>1. Temel Kimlik & Biyografi</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-            <div className="form-group"><label>Ad <span style={{color: '#e74c3c'}}>*</span></label><input type="text" id="firstName" value={form.firstName} onChange={handleChange} placeholder="Ad" maxLength={50} />{renderLimitWarning('firstName', 50)}</div>
-            <div className="form-group"><label>Soyad <span style={{color: '#e74c3c'}}>*</span></label><input type="text" id="lastName" value={form.lastName} onChange={handleChange} placeholder="Soyad" maxLength={50} />{renderLimitWarning('lastName', 50)}</div>
+            <CustomValidatedInput label={<>Ad</>} id="firstName" value={form.firstName} onChange={handleChange} placeholder="Ad" maxLength={50} error={formErrors.firstName} successMessage={form.firstName ? 'Geçerli Ad' : null} />
+            <CustomValidatedInput label={<>Soyad</>} id="lastName" value={form.lastName} onChange={handleChange} placeholder="Soyad" maxLength={50} error={formErrors.lastName} successMessage={form.lastName ? 'Geçerli Soyad' : null} />
           </div>
-          <div className="form-group"><label>Alt Başlık</label><input type="text" id="subtitle" value={form.subtitle} onChange={handleChange} placeholder="Örn: Yaşayan Kütüphane" maxLength={80} />{renderLimitWarning('subtitle', 80)}</div>
-          <div className="form-group"><label>Biyografi <span style={{color: '#e74c3c'}}>*</span></label><textarea id="bio" rows={6} value={form.bio} onChange={handleChange} placeholder="Hayat hikayesi..." maxLength={1000}></textarea>{renderLimitWarning('bio', 1000)}</div>
-          <div className="form-group"><label>Alıntı Söz</label><input type="text" id="quote" value={form.quote} onChange={handleChange} placeholder="Meşhur sözü..." maxLength={150} />{renderLimitWarning('quote', 150)}</div>
+          <CustomValidatedInput label="Alt Başlık" id="subtitle" value={form.subtitle} onChange={handleChange} placeholder="Örn: Yaşayan Kütüphane" maxLength={80} error={formErrors.subtitle} successMessage={form.subtitle ? 'Geçerli alt başlık' : null} />
+          <CustomValidatedInput as="textarea" rows={6} label={<>Biyografi</>} id="bio" value={form.bio} onChange={handleChange} placeholder="Hayat hikayesi..." maxLength={1000} error={formErrors.bio} successMessage={form.bio ? 'Geçerli Biyografi' : null} />
+          <CustomValidatedInput label="Alıntı Söz" id="quote" value={form.quote} onChange={handleChange} placeholder="Meşhur sözü..." maxLength={150} error={formErrors.quote} successMessage={form.quote ? 'Geçerli alıntı' : null} />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-            <div className="form-group"><label>Doğum Tarihi <span style={{color: '#e74c3c'}}>*</span></label><input type="date" id="birthDate" value={form.birthDate} onChange={handleChange} /></div>
-            <div className="form-group"><label>Ölüm Tarihi <span style={{color: '#e74c3c'}}>*</span></label><input type="date" id="deathDate" value={form.deathDate} onChange={handleChange} /></div>
+            <CustomValidatedInput type="date" label={<>Doğum Tarihi</>} id="birthDate" value={form.birthDate} onChange={handleChange} error={formErrors.birthDate} successMessage={form.birthDate ? 'Geçerli Tarih' : null} />
+            <CustomValidatedInput type="date" label={<>Ölüm Tarihi</>} id="deathDate" value={form.deathDate} onChange={handleChange} error={formErrors.deathDate} successMessage={form.deathDate ? 'Geçerli Tarih' : null} />
           </div>
         </div>
 
         {/* Step 2 */}
         <div className="wizard-step-panel" style={{ display: step === 2 ? 'block' : 'none' }}>
           <h3>2. Kişilik & Dil Haritası</h3>
-          <div className="form-group"><label>Kişilik Özellikleri (virgülle) <span style={{color: '#e74c3c'}}>*</span></label><input type="text" id="traits" value={form.traits} onChange={handleChange} placeholder="Nesnel, Çok Dilli..." maxLength={100} />{renderLimitWarning('traits', 100)}</div>
+          <CustomValidatedInput label={<>Kişilik Özellikleri</>} id="traits" value={form.traits} onChange={handleChange} placeholder="Nesnel, Çok Dilli..." maxLength={100} error={formErrors.traits} successMessage={form.traits ? 'Geçerli özellik' : null} />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-            <div className="form-group"><label>Konuştuğu Diller <span style={{color: '#e74c3c'}}>*</span></label><input type="text" id="langAna" value={form.langAna} onChange={handleChange} placeholder="Türkçe, Almanca..." maxLength={100} />{renderLimitWarning('langAna', 100)}</div>
-            <div className="form-group"><label>Uzmanlık Dilleri</label><input type="text" id="langUzmanlik" value={form.langUzmanlik} onChange={handleChange} placeholder="Osmanlıca, Farsça..." maxLength={100} />{renderLimitWarning('langUzmanlik', 100)}</div>
+            <CustomValidatedInput label={<>Konuştuğu Diller</>} id="langAna" value={form.langAna} onChange={handleChange} placeholder="Türkçe, Almanca..." maxLength={100} error={formErrors.langAna} successMessage={form.langAna ? 'Geçerli dil' : null} />
+            <CustomValidatedInput label="Uzmanlık Dilleri" id="langUzmanlik" value={form.langUzmanlik} onChange={handleChange} placeholder="Osmanlıca, Farsça..." maxLength={100} error={formErrors.langUzmanlik} successMessage={form.langUzmanlik ? 'Geçerli dil' : null} />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-            <div className="form-group"><label>Onu Güldüren</label><input type="text" id="makesLaugh" value={form.makesLaugh} onChange={handleChange} maxLength={100} />{renderLimitWarning('makesLaugh', 100)}</div>
-            <div className="form-group"><label>Onu Ağlatan</label><input type="text" id="makesCry" value={form.makesCry} onChange={handleChange} maxLength={100} />{renderLimitWarning('makesCry', 100)}</div>
+            <CustomValidatedInput label="Onu Güldüren" id="makesLaugh" value={form.makesLaugh} onChange={handleChange} maxLength={100} error={formErrors.makesLaugh} successMessage={form.makesLaugh ? 'Geçerli girdi' : null} />
+            <CustomValidatedInput label="Onu Ağlatan" id="makesCry" value={form.makesCry} onChange={handleChange} maxLength={100} error={formErrors.makesCry} successMessage={form.makesCry ? 'Geçerli girdi' : null} />
           </div>
         </div>
 
@@ -415,12 +439,12 @@ const DashboardPage = () => {
           <div className="form-group" style={{ marginBottom: '30px' }}>
             <label style={{ fontSize: '15px', fontWeight: 'bold' }}>Fiziksel Özellikler</label>
             <textarea id="physical" value={form.physical} onChange={handleChange} style={{ display: 'none' }}></textarea>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr auto', gap: '10px', marginTop: '5px', marginBottom: '15px', alignItems: 'center' }}>
               <select value={physicalType} onChange={e => { setPhysicalType(e.target.value); setPhysicalValue(''); }} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
                 {Object.keys(physicalOptions).map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
-              
+
               {physicalOptions[physicalType] && physicalOptions[physicalType].length > 0 ? (
                 <select value={physicalValue} onChange={e => setPhysicalValue(e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
                   <option value="">Seçiniz</option>
@@ -429,13 +453,13 @@ const DashboardPage = () => {
               ) : (
                 <input type="text" placeholder={physicalType === 'Boy' ? 'Örn: 175 cm' : physicalType === 'Kilo' ? 'Örn: 70 kg' : 'Değer giriniz'} value={physicalValue} onChange={e => setPhysicalValue(e.target.value)} maxLength={100} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)' }} />
               )}
-              
+
               <button type="button" onClick={handleAddPhysical} className="btn" style={{ padding: '8px 15px', fontSize: '14px', background: '#27ae60', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
                 Ekle
               </button>
             </div>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {(form.physical ? form.physical.split('\n').filter(Boolean) : []).map((entry, idx) => (
                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9f9f9', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
@@ -453,10 +477,10 @@ const DashboardPage = () => {
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
-            <div className="form-group"><label>En Mutlu Anı</label><input type="text" id="happiestMemory" value={form.happiestMemory} onChange={handleChange} maxLength={300} />{renderLimitWarning('happiestMemory', 300)}</div>
+            <CustomValidatedInput label="En Mutlu Anı" id="happiestMemory" value={form.happiestMemory} onChange={handleChange} maxLength={300} error={formErrors.happiestMemory} successMessage={form.happiestMemory ? 'Geçerli anı' : null} />
           </div>
-          <div className="form-group"><label>En Büyük Korkusu</label><input type="text" id="biggestFear" value={form.biggestFear} onChange={handleChange} maxLength={100} />{renderLimitWarning('biggestFear', 100)}</div>
-          <div className="form-group"><label>Manevi Vasiyet</label><textarea id="will" rows="3" placeholder="Vasiyet..." value={form.will} onChange={handleChange} maxLength={300}></textarea>{renderLimitWarning('will', 300)}</div>
+          <CustomValidatedInput label="En Büyük Korkusu" id="biggestFear" value={form.biggestFear} onChange={handleChange} maxLength={100} error={formErrors.biggestFear} successMessage={form.biggestFear ? 'Geçerli korku' : null} />
+          <CustomValidatedInput as="textarea" rows="3" label="Manevi Vasiyet" id="will" placeholder="Vasiyet..." value={form.will} onChange={handleChange} maxLength={300} error={formErrors.will} successMessage={form.will ? 'Geçerli vasiyet' : null} />
           <div style={{ marginTop: '15px' }}>
             <label><input type="checkbox" id="aiVoiceActive" checked={form.aiVoiceActive} onChange={handleChange} /> Yapay Zeka Ses Arşivi Aktif</label><br />
             <label><input type="checkbox" id="arEnabled" checked={form.arEnabled} onChange={handleChange} /> AR Teknolojisi Aktif</label><br />
@@ -467,64 +491,48 @@ const DashboardPage = () => {
         {/* Step 4 */}
         <div className="wizard-step-panel" style={{ display: step === 4 ? 'block' : 'none' }}>
           <h3>4. Kategori & Konum</h3>
-          <div className="form-group"><label>Kategori</label>
-            <select id="category" value={form.category} onChange={handleChange}>
-              <option value="">Seçiniz</option>
-              <option value="siyaset">Siyasiler</option>
-              <option value="hak_savunucusu">Hak Savunucuları</option>
-              <option value="sanat">Sanatçılar</option>
-              <option value="sehit">Şehitler</option>
-              <option value="kadin_cinayeti">Kadın Cinayetleri</option>
-            </select>
-          </div>
+          <CustomValidatedInput as="select" label="Kategori" id="category" value={form.category} onChange={handleChange} error={formErrors.category} successMessage={form.category ? 'Geçerli kategori' : null}>
+            <option value="">Seçiniz</option>
+            <option value="siyaset">Siyasiler</option>
+            <option value="hak_savunucusu">Hak Savunucuları</option>
+            <option value="sanat">Sanatçılar</option>
+            <option value="sehit">Şehitler</option>
+            <option value="kadin_cinayeti">Kadın Cinayetleri</option>
+          </CustomValidatedInput>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-            <div className="form-group">
-              <label>Şehir <span style={{color: '#e74c3c'}}>*</span></label>
-              <select id="city" value={form.city} onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, district: '' })); }}>
-                <option value="">İl Seçiniz</option>
-                {citiesData.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>İlçe <span style={{color: '#e74c3c'}}>*</span></label>
-              <select id="district" value={form.district} onChange={handleChange} disabled={!form.city}>
-                <option value="">İlçe Seçiniz</option>
-                {districtOptions.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
+            <CustomValidatedInput as="select" label={<>Şehir</>} id="city" value={form.city} onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, district: '' })); }} error={formErrors.city} successMessage={form.city ? 'Geçerli Şehir' : null}>
+              <option value="">İl Seçiniz</option>
+              {citiesData.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+            </CustomValidatedInput>
+            <CustomValidatedInput as="select" label={<>İlçe</>} id="district" value={form.district} onChange={handleChange} disabled={!form.city} error={formErrors.district} successMessage={form.district ? 'Geçerli İlçe' : null}>
+              <option value="">İlçe Seçiniz</option>
+              {districtOptions.map(d => <option key={d} value={d}>{d}</option>)}
+            </CustomValidatedInput>
           </div>
-          <div className="form-group">
-            <label>Meslek <span style={{color: '#e74c3c'}}>*</span></label>
-            <input 
-              type="text" 
-              id="occupation" 
-              value={form.occupation} 
-              onChange={handleChange} 
-              placeholder="Örn: Avukat, Doktor, Müzisyen..." 
-              maxLength={80}
-            />{renderLimitWarning('occupation', 80)}
-          </div>
-          <div className="form-group"><label>Cinsiyet <span style={{color: '#e74c3c'}}>*</span></label><select id="gender" value={form.gender} onChange={handleChange}><option value="">Seçiniz</option><option value="male">Erkek</option><option value="female">Kadın</option></select></div>
-          <div className="form-group"><label>Ölüm Nedeni <span style={{color: '#e74c3c'}}>*</span></label><input type="text" id="deathCause" value={form.deathCause} onChange={handleChange} maxLength={80} />{renderLimitWarning('deathCause', 80)}</div>
+          <CustomValidatedInput label={<>Meslek</>} id="occupation" value={form.occupation} onChange={handleChange} placeholder="Örn: Avukat, Doktor, Müzisyen..." maxLength={80} error={formErrors.occupation} successMessage={form.occupation ? 'Geçerli meslek' : null} />
+          <CustomValidatedInput as="select" label={<>Cinsiyet</>} id="gender" value={form.gender} onChange={handleChange} error={formErrors.gender} successMessage={form.gender ? 'Geçerli cinsiyet' : null}>
+            <option value="">Seçiniz</option><option value="male">Erkek</option><option value="female">Kadın</option>
+          </CustomValidatedInput>
+          <CustomValidatedInput label={<>Ölüm Nedeni</>} id="deathCause" value={form.deathCause} onChange={handleChange} maxLength={80} error={formErrors.deathCause} successMessage={form.deathCause ? 'Geçerli neden' : null} />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-            <div className="form-group"><label>Mezarlık Mevkisi <span style={{color: '#e74c3c'}}>*</span></label><input type="text" id="graveLocation" value={form.graveLocation} onChange={handleChange} maxLength={150} />{renderLimitWarning('graveLocation', 150)}</div>
-            <div className="form-group"><label>Mezar Vasiyeti</label><input type="text" id="graveWill" value={form.graveWill} onChange={handleChange} maxLength={200} />{renderLimitWarning('graveWill', 200)}</div>
+            <CustomValidatedInput label={<>Mezarlık Mevkisi</>} id="graveLocation" value={form.graveLocation} onChange={handleChange} maxLength={150} error={formErrors.graveLocation} successMessage={form.graveLocation ? 'Geçerli mevki' : null} />
+            <CustomValidatedInput label="Mezar Vasiyeti" id="graveWill" value={form.graveWill} onChange={handleChange} maxLength={200} error={formErrors.graveWill} successMessage={form.graveWill ? 'Geçerli vasiyet' : null} />
           </div>
           <div className="form-group" style={{ marginBottom: '30px' }}>
             <label style={{ fontSize: '15px', fontWeight: 'bold' }}>Mezarlık Konumu</label>
             <p style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '10px' }}>Konumu belirlemek için haritada mezarlığın bulunduğu yere tıklayın.</p>
 
             <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-              <input 
-                type="text" 
-                placeholder="Şehir, ilçe, mezarlık adı arayın..." 
-                value={mapSearchQuery} 
-                onChange={e => setMapSearchQuery(e.target.value)} 
+              <input
+                type="text"
+                placeholder="Şehir, ilçe, mezarlık adı arayın..."
+                value={mapSearchQuery}
+                onChange={e => setMapSearchQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleMapSearch())}
                 style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--input-bg)', color: 'var(--text-main)' }}
               />
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleMapSearch}
                 style={{ background: 'var(--gold-accent)', color: '#fff', border: 'none', padding: '0 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'transform 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
@@ -532,8 +540,8 @@ const DashboardPage = () => {
               >
                 Ara
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleClearMap}
                 style={{ background: '#e74c3c', color: '#fff', border: 'none', padding: '0 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'transform 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
@@ -554,7 +562,7 @@ const DashboardPage = () => {
           <div className="form-group" style={{ marginBottom: '30px' }}>
             <label style={{ fontSize: '15px', fontWeight: 'bold' }}>Eserleri</label>
             <textarea id="works" value={form.works} onChange={handleChange} style={{ display: 'none' }}></textarea>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr auto', gap: '10px', marginTop: '5px', marginBottom: '15px', alignItems: 'center' }}>
               <input type="number" placeholder="Yıl" value={workYear} onChange={e => setWorkYear(e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)' }} />
               <input type="text" placeholder="Eser Adı" value={workName} onChange={e => setWorkName(e.target.value)} maxLength={100} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)' }} />
@@ -563,7 +571,7 @@ const DashboardPage = () => {
                 Ekle
               </button>
             </div>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {(form.works ? form.works.split('\n').filter(Boolean) : []).map((entry, idx) => (
                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9f9f9', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
@@ -584,7 +592,7 @@ const DashboardPage = () => {
           <div className="form-group" style={{ marginBottom: '30px' }}>
             <label style={{ fontSize: '15px', fontWeight: 'bold' }}>Kronolojik Olaylar</label>
             <textarea id="timeline" value={form.timeline} onChange={handleChange} style={{ display: 'none' }}></textarea>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr auto', gap: '10px', marginTop: '5px', marginBottom: '15px', alignItems: 'center' }}>
               <input type="number" placeholder="Yıl" value={timelineYear} onChange={e => setTimelineYear(e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)' }} />
               <input type="text" placeholder="Olay Açıklaması" value={timelineEvent} onChange={e => setTimelineEvent(e.target.value)} maxLength={100} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)' }} />
@@ -593,7 +601,7 @@ const DashboardPage = () => {
                 Ekle
               </button>
             </div>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {(form.timeline ? form.timeline.split('\n').filter(Boolean) : []).map((entry, idx) => (
                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9f9f9', padding: '10px 15px', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
@@ -611,15 +619,15 @@ const DashboardPage = () => {
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
-            <div className="form-group"><label>Sevdiği Çiçek</label><input type="text" id="flower" value={form.flower} onChange={handleChange} maxLength={50} />{renderLimitWarning('flower', 50)}</div>
-            <div className="form-group"><label>İmza Kokusu</label><input type="text" id="scent" value={form.scent} onChange={handleChange} maxLength={50} />{renderLimitWarning('scent', 50)}</div>
-            <div className="form-group"><label>Favori Yemek</label><input type="text" id="food" value={form.food} onChange={handleChange} maxLength={50} />{renderLimitWarning('food', 50)}</div>
+            <CustomValidatedInput label="Sevdiği Çiçek" id="flower" value={form.flower} onChange={handleChange} maxLength={50} error={formErrors.flower} successMessage={form.flower ? 'Geçerli çiçek' : null} />
+            <CustomValidatedInput label="İmza Kokusu" id="scent" value={form.scent} onChange={handleChange} maxLength={50} error={formErrors.scent} successMessage={form.scent ? 'Geçerli koku' : null} />
+            <CustomValidatedInput label="Favori Yemek" id="food" value={form.food} onChange={handleChange} maxLength={50} error={formErrors.food} successMessage={form.food ? 'Geçerli yemek' : null} />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-            <div className="form-group"><label>Spor/Takım</label><input type="text" id="sports" value={form.sports} onChange={handleChange} maxLength={100} />{renderLimitWarning('sports', 100)}</div>
-            <div className="form-group"><label>Filmler</label><input type="text" id="movies" value={form.movies} onChange={handleChange} maxLength={100} />{renderLimitWarning('movies', 100)}</div>
+            <CustomValidatedInput label="Spor/Takım" id="sports" value={form.sports} onChange={handleChange} maxLength={100} error={formErrors.sports} successMessage={form.sports ? 'Geçerli spor' : null} />
+            <CustomValidatedInput label="Filmler" id="movies" value={form.movies} onChange={handleChange} maxLength={100} error={formErrors.movies} successMessage={form.movies ? 'Geçerli film' : null} />
           </div>
-          <div className="form-group"><label>Müzeler</label><input type="text" id="museums" value={form.museums} onChange={handleChange} maxLength={100} />{renderLimitWarning('museums', 100)}</div>
+          <CustomValidatedInput label="Müzeler" id="museums" value={form.museums} onChange={handleChange} maxLength={100} error={formErrors.museums} successMessage={form.museums ? 'Geçerli müze' : null} />
         </div>
 
         {/* Step 6 */}
@@ -666,9 +674,14 @@ const DashboardPage = () => {
           <hr style={{ border: 0, borderTop: '1px solid var(--border-color)', margin: '30px 0' }} />
           <p style={{ color: 'var(--text-light)' }}>Tüm bilgileri kontrol ettikten sonra kaydedin. Anıtınız admin onayından sonra yayına alınacaktır.</p>
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <button type="submit" className="btn" disabled={saving} style={{ background: '#6B705C', fontSize: '16px', padding: '15px 40px' }}>
+            <button type="submit" className="btn" disabled={saving} style={{ background: '#6B705C', fontSize: '16px', padding: '15px 40px', color: 'white' }}>
               {saving ? 'KAYDEDİLİYOR...' : 'DEĞİŞİKLİKLERİ KAYDET VE ONAYA GÖNDER'}
             </button>
+            {saveMessage.text && (
+              <div style={{ marginTop: '15px', color: saveMessage.type === 'success' ? '#27ae60' : '#e74c3c', fontWeight: 'bold', fontSize: '15px' }}>
+                {saveMessage.text}
+              </div>
+            )}
           </div>
         </div>
 
@@ -676,31 +689,9 @@ const DashboardPage = () => {
           <button type="button" className="btn btn-outline" onClick={() => { if (step > 1) { setStep(s => s - 1); window.scrollTo({ top: 200, behavior: 'smooth' }); } }} disabled={step === 1}>Geri</button>
           <button type="button" className="btn" onClick={() => { if (step < total) { setStep(s => s + 1); window.scrollTo({ top: 200, behavior: 'smooth' }); } }} style={{ display: step === total ? 'none' : 'block' }}>Sonraki Adım</button>
         </div>
-      
-      {infoModal.isOpen && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(5px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999
-        }}>
-          <div style={{
-            background: 'var(--card-bg)', color: 'var(--text-dark)',
-            padding: '40px 50px', borderRadius: '15px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-            textAlign: 'center', maxWidth: '400px', width: '90%',
-            border: '1px solid var(--gold-accent)'
-          }}>
-            <p style={{ marginBottom: '30px', fontSize: '18px', fontWeight: '500', color: 'var(--accent-color)', lineHeight: 1.6 }}>{infoModal.text}</p>
-            <button 
-              className="btn" 
-              style={{ width: '100%', padding: '12px', fontSize: '16px', borderRadius: '8px' }}
-              onClick={() => setInfoModal({ isOpen: false, text: '' })}
-            >
-              Tamam
-            </button>
-          </div>
-        </div>
-      )}
-</form>
+
+
+      </form>
     </div>
   );
 };

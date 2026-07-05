@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Api from '../api';
 import { showFlash } from '../components/FlashMessage';
 import { sanitizeInput } from '../utils/sanitize';
+import CustomValidatedInput from '../components/CustomValidatedInput';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1); // 1: Credentials, 2: Method Selection, 3: Enter Code
@@ -16,8 +17,54 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const [usernameError, setUsernameError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
+  const [codeError, setCodeError] = useState(null);
+
+  // Timer states
+  const [timeLeft, setTimeLeft] = useState(180);
+  const [isTimerActive, setIsTimerActive] = useState(false);
+
+  React.useEffect(() => {
+    let interval = null;
+    if (isTimerActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      setIsTimerActive(false);
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerActive, timeLeft]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    let hasError = false;
+
+    if (!username || username.trim() === '') {
+      setUsernameError('Lütfen bu alanı doldurun.');
+      hasError = true;
+    } else {
+      setUsernameError(null);
+    }
+
+    if (!password || password.trim() === '') {
+      setPasswordError('Lütfen bu alanı doldurun.');
+      hasError = true;
+    } else {
+      setPasswordError(null);
+    }
+
+    if (hasError) return;
+
     setLoading(true);
 
     const result = await Api.login(username, password);
@@ -50,6 +97,8 @@ const LoginPage = () => {
 
     if (result.success) {
       showFlash('Doğrulama kodu gönderildi.', 'success');
+      setTimeLeft(180);
+      setIsTimerActive(true);
       setStep(3);
     } else {
       showFlash(result.error || 'Kod gönderilemedi.', 'error');
@@ -58,7 +107,16 @@ const LoginPage = () => {
 
   const handleVerifyCode = async (e) => {
     e.preventDefault();
-    if (!verificationCode) return;
+    
+    if (!verificationCode || verificationCode.trim() === '') {
+      setCodeError('Lütfen bu alanı doldurun.');
+      return;
+    } else if (verificationCode.length !== 6) {
+      setCodeError('Geçersiz doğrulama kodu.');
+      return;
+    } else {
+      setCodeError(null);
+    }
     
     setLoading(true);
     const result = await Api.verifyTwoFactorCode(twoFactorToken, verificationCode);
@@ -78,31 +136,33 @@ const LoginPage = () => {
       <div className="auth-body">
         
         {step === 1 && (
-          <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <label htmlFor="username">Kullanıcı Adı</label>
-              <input 
-                type="text" 
-                id="username" 
-                placeholder="Kullanıcı adınızı girin" 
-                value={username} 
-                onChange={(e) => setUsername(sanitizeInput(e.target.value))} 
-                maxLength={20}
-                required 
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">Şifre</label>
-              <input 
-               type="password" 
-               id="password" 
-               placeholder="Şifrenizi girin" 
-               value={password}
-               onChange={(e) => setPassword(sanitizeInput(e.target.value))}
-               maxLength={20}
-               required 
-              />
-            </div>
+          <form onSubmit={handleLogin} noValidate>
+            <CustomValidatedInput
+              label="Kullanıcı Adı"
+              id="username"
+              placeholder="Kullanıcı adınızı girin"
+              value={username}
+              onChange={(e) => {
+                setUsername(sanitizeInput(e.target.value).replace(/\s/g, ''));
+                if (e.target.value.trim() !== '') setUsernameError(null);
+              }}
+              maxLength={20}
+              error={usernameError}
+            />
+
+            <CustomValidatedInput
+              type="password"
+              label="Şifre"
+              id="password"
+              placeholder="Şifrenizi girin"
+              value={password}
+              onChange={(e) => {
+                setPassword(sanitizeInput(e.target.value));
+                if (e.target.value.trim() !== '') setPasswordError(null);
+              }}
+              maxLength={20}
+              error={passwordError}
+            />
             <button type="submit" className="btn" style={{ width: '100%', marginTop: '10px' }} disabled={loading}>
               {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
             </button>
@@ -157,27 +217,45 @@ const LoginPage = () => {
         )}
 
         {step === 3 && (
-          <form onSubmit={handleVerifyCode}>
+          <form onSubmit={handleVerifyCode} noValidate>
             <p style={{ textAlign: 'center', marginBottom: '20px', color: '#5D705D', fontSize: '15px' }}>
               Lütfen size gönderilen 6 haneli doğrulama kodunu girin.
             </p>
-            <div className="form-group">
-              <label htmlFor="code" style={{ textAlign: 'center', display: 'block' }}>Doğrulama Kodu</label>
-              <input 
-                type="text" 
-                id="code" 
-                placeholder="XXXXXX" 
-                value={verificationCode} 
-                onChange={(e) => setVerificationCode(sanitizeInput(e.target.value).replace(/\D/g, '').slice(0, 6))}
-                style={{ textAlign: 'center', fontSize: '24px', letterSpacing: '5px' }}
-                required 
-              />
+
+            <div style={{ textAlign: 'center', marginBottom: '15px', fontWeight: 'bold', color: timeLeft === 0 ? '#e74c3c' : '#5D705D', fontSize: '18px' }}>
+              Kalan Süre: {formatTime(timeLeft)}
             </div>
-            <button type="submit" className="btn" style={{ width: '100%', marginTop: '10px' }} disabled={loading || verificationCode.length !== 6}>
+
+            <CustomValidatedInput
+              label="Doğrulama Kodu"
+              id="code"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder="XXXXXX"
+              value={verificationCode}
+              onChange={(e) => {
+                setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6));
+                if (e.target.value.trim() !== '') setCodeError(null);
+              }}
+              style={{ textAlign: 'center', fontSize: '24px', letterSpacing: '5px' }}
+              maxLength={6}
+              autoComplete="one-time-code"
+              error={codeError}
+              successMessage={verificationCode.length === 6 && !codeError ? "✓ Geçerli doğrulama kodu" : null}
+              hideMaxLengthAlert={true}
+            />
+            <button type="submit" className="btn" style={{ width: '100%', marginTop: '10px' }} disabled={loading || timeLeft === 0}>
               {loading ? 'Doğrulanıyor...' : 'Doğrula ve Giriş Yap'}
             </button>
             <div style={{ marginTop: '15px', textAlign: 'center' }}>
-              <p className="form-footer"><a href="#" onClick={(e) => { e.preventDefault(); setStep(2); setVerificationCode(''); }}>Farklı bir yöntem seç</a></p>
+              <p className="form-footer">
+                Kodunuz ulaşmadı mı veya süresi mi doldu? <br/>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleSendCode(e); }} style={{ fontWeight: 'bold' }}>Tekrar Kod Gönder</a>
+              </p>
+              <p className="form-footer" style={{ marginTop: '10px' }}>
+                <a href="#" onClick={(e) => { e.preventDefault(); setStep(2); setVerificationCode(''); setIsTimerActive(false); }}>Farklı bir yöntem seç</a>
+              </p>
             </div>
           </form>
         )}

@@ -85,7 +85,11 @@ public class SecurityConfig {
 				// Statik frontend dosyaları herkese açık (HTML, CSS, JS, images)
 				.requestMatchers("/", "/index.html", "/assets/**", "/pages/**", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
 				// Auth endpointleri herkese açık
-				.requestMatchers(REGISTER, AUTHENTICATE, REFRESH_TOKEN, "/rest/api/auth/send-2fa", "/rest/api/auth/verify-2fa").permitAll()
+				.requestMatchers(REGISTER, AUTHENTICATE, REFRESH_TOKEN, 
+					"/rest/api/auth/send-2fa", "/rest/api/auth/verify-2fa",
+					"/rest/api/auth/forgot-password", "/rest/api/auth/send-reset-code",
+					"/rest/api/auth/verify-reset-code", "/rest/api/auth/reset-password"
+				).permitAll()
 				// Public endpointler (Python'daki /, /profile/<slug>, /api/search_memorial, /api/stats, /istatistikler)
 				.requestMatchers(HttpMethod.GET, "/rest/api/public/**").permitAll()
 				// Etkileşim endpointleri (fatiha, çiçek vb.) herkese açık

@@ -15,8 +15,6 @@ const HomePage = () => {
   const [showLiveSearch, setShowLiveSearch] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [districts, setDistricts] = useState([]);
-  const [homeFirstName, setHomeFirstName] = useState('');
-  const [homeLastName, setHomeLastName] = useState('');
   
   const searchTimeout = useRef(null);
 
@@ -103,23 +101,15 @@ const HomePage = () => {
 
   const handleQuickCreate = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const firstName = formData.get('first_name');
-    const lastName = formData.get('last_name');
 
     if (Api.isLoggedIn()) {
       if (hasMemorial) {
         navigate('/dashboard');
       } else {
-        const draft = localStorage.getItem('add_memorial_draft');
-        let parsed = draft ? JSON.parse(draft) : {};
-        parsed.firstName = firstName;
-        parsed.lastName = lastName;
-        localStorage.setItem('add_memorial_draft', JSON.stringify(parsed));
         navigate('/add-memorial');
       }
     } else {
-      navigate(`/register?first_name=${encodeURIComponent(firstName)}&last_name=${encodeURIComponent(lastName)}`);
+      navigate('/register');
     }
   };
 
@@ -138,20 +128,6 @@ const HomePage = () => {
           <div className="quick-create-card">
             <h2>Hemen Başlayın</h2>
             <form onSubmit={handleQuickCreate}>
-              <div className="quick-row">
-                <div className="form-group" style={{ flex: 1 }}>
-                  <label>Merhumun Adı</label>
-                  <input type="text" name="first_name" placeholder="Ad" value={homeFirstName} onChange={e => setHomeFirstName(sanitizeInput(e.target.value))} maxLength={50} required />
-                  {homeFirstName.length >= 50 && <span style={{ color: '#e74c3c', fontSize: '12px', position: 'absolute', bottom: '-18px', left: '0', display: 'block' }}>Maksimum karakter sınırına (50) ulaştınız.</span>}
-                </div>
-              </div>
-              <div className="quick-row">
-                <div className="form-group" style={{ flex: 1 }}>
-                  <label>Merhumun Soyadı</label>
-                  <input type="text" name="last_name" placeholder="Soyad" value={homeLastName} onChange={e => setHomeLastName(sanitizeInput(e.target.value))} maxLength={50} required />
-                  {homeLastName.length >= 50 && <span style={{ color: '#e74c3c', fontSize: '12px', position: 'absolute', bottom: '-18px', left: '0', display: 'block' }}>Maksimum karakter sınırına (50) ulaştınız.</span>}
-                </div>
-              </div>
               <button type="submit" className="btn" style={{ width: '100%', marginTop: '10px' }}>Ücretsiz Anıt Oluştur</button>
             </form>
             <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-light)', marginTop: '15px' }}>Kayıt olmak tamamen ücretsizdir.</p>
@@ -167,11 +143,13 @@ const HomePage = () => {
               <label>Ad</label>
               <input type="text" placeholder="Adı..." value={searchParams.firstName} onChange={(e) => handleLiveSearch(e.target.value, 'firstName')} autoComplete="off" maxLength={50} />
               {searchParams.firstName.length >= 50 && <span style={{ color: '#e74c3c', fontSize: '11px', position: 'absolute', bottom: '-18px', left: '0', display: 'block' }}>Maksimum karakter sınırına ulaştınız.</span>}
+              {/\d/.test(searchParams.firstName) && <span style={{ color: '#e74c3c', fontSize: '11px', position: 'absolute', bottom: '-18px', left: '0', display: 'block' }}>Geçersiz ad</span>}
             </div>
             <div className="search-field">
               <label>Soyad</label>
               <input type="text" placeholder="Soyadı..." value={searchParams.lastName} onChange={(e) => handleLiveSearch(e.target.value, 'lastName')} autoComplete="off" maxLength={50} />
               {searchParams.lastName.length >= 50 && <span style={{ color: '#e74c3c', fontSize: '11px', position: 'absolute', bottom: '-18px', left: '0', display: 'block' }}>Maksimum karakter sınırına ulaştınız.</span>}
+              {/\d/.test(searchParams.lastName) && <span style={{ color: '#e74c3c', fontSize: '11px', position: 'absolute', bottom: '-18px', left: '0', display: 'block' }}>Geçersiz soyad</span>}
             </div>
             <div className="search-field">
               <label>İl</label>
@@ -201,6 +179,7 @@ const HomePage = () => {
                 <label>Meslek</label>
                 <input type="text" placeholder="Örn: Mühendis" value={searchParams.occupation} onChange={e => setSearchParams(prev => ({...prev, occupation: sanitizeInput(e.target.value)}))} maxLength={80} />
                 {searchParams.occupation.length >= 80 && <span style={{ color: '#e74c3c', fontSize: '11px', position: 'absolute', bottom: '-18px', left: '0', display: 'block' }}>Maksimum karakter sınırına ulaştınız.</span>}
+                {/\d/.test(searchParams.occupation) && <span style={{ color: '#e74c3c', fontSize: '11px', position: 'absolute', bottom: '-18px', left: '0', display: 'block' }}>Geçersiz meslek</span>}
               </div>
               <div className="search-field"><label>Cinsiyet</label>
                 <select value={searchParams.gender} onChange={e => setSearchParams(prev => ({...prev, gender: e.target.value}))}>
@@ -304,30 +283,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* CATEGORIES */}
-      <section className="home-section" id="featured-categories">
-        <div className="section-title"><h2>Öne Çıkan Kategoriler</h2><p>Toplumsal hafızamızda yer eden aziz hatıraları kategorilere göre keşfedin.</p></div>
-        <div className="categories-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-          {[
-            { id: 'sehit', icon: '🪖', title: 'Şehitler', desc: 'Askeri, emniyet ve görev şehitleri.' },
-            { id: 'kadin_cinayeti', icon: '🎗️', title: 'Kadın Cinayetleri', desc: 'Şiddet mağduru kadınlar.' },
-            { id: 'siyaset', icon: '🏛️', title: 'Siyasiler', desc: 'Ülke yönetimine hizmet etmiş kişiler.' },
-            { id: 'hak_savunucusu', icon: '⚖️', title: 'Hak Savunucuları', desc: 'İnsan, çevre ve hayvan hakları mücadelecileri.' },
-            { id: 'deprem', icon: '🏚️', title: 'Deprem Kurbanları', desc: 'Enkaz altında hayatını kaybedenler.' },
-            { id: 'is_kazasi', icon: '👷', title: 'İş Kazaları', desc: 'Maden, inşaat ve sanayi emekçileri.' },
-            { id: 'kanser', icon: '🎗️', title: 'Kanser Kurbanları', desc: 'Kanserle mücadele etmiş kişiler.' },
-            { id: 'nadir_hastalik', icon: '🧬', title: 'Nadir Hastalıklar', desc: 'SMA, ALS gibi genetik hastalıklar.' }
-          ].map(cat => (
-            <div key={cat.id} onClick={() => filterByCategory(cat.id)} className="cat-card" style={{ background: '#fff', border: '1px solid var(--border-color)', padding: '25px', borderRadius: '16px', display: 'flex', alignItems: 'start', gap: '15px', textDecoration: 'none', transition: 'all 0.3s', cursor: 'pointer' }}>
-              <span className="cat-icon" style={{ fontSize: '32px' }}>{cat.icon}</span>
-              <div className="cat-info">
-                <h3 style={{ fontSize: '18px', marginBottom: '5px', color: 'var(--accent-color)' }}>{cat.title}</h3>
-                <p style={{ fontSize: '13px', color: 'var(--text-light)', lineHeight: '1.4', margin: 0 }}>{cat.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
     </>
   );
 };
